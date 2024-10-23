@@ -2,11 +2,19 @@ import { Link } from 'react-router-dom'
 import JobSearchForm from '../../components/JobSearchForm'
 import Navbar from '../../components/Navbar'
 import { Separator } from '../../components/ui/separator'
-import { useFetchCompanies } from '../../hooks/useFetchCompanies'
 import CompanyCard from '../../components/CompanyCard'
+import { useFetchDataWithPagination } from '../../hooks/useFetchDataWithPagination'
+import { getCompaniesApi } from '../../apis/company.api'
+import { ICompany, IJob } from '../../interfaces/schemas'
+import { getJobsApi } from '../../apis/job.api'
+import JobCard from '../../components/JobCard'
 
 export const HomePage = () => {
-  const { companies } = useFetchCompanies()
+  const { data: companies } = useFetchDataWithPagination<ICompany>(
+    getCompaniesApi,
+    4
+  )
+  const { data: jobs } = useFetchDataWithPagination<IJob>(getJobsApi, 6)
 
   return (
     <>
@@ -24,12 +32,12 @@ export const HomePage = () => {
       </div>
       {/* Separator */}
       <Separator />
-      {/* Companies */}
-      <div className="max-w-7xl mx-auto p4 my-16">
+      {/* Top Companies */}
+      <div className="max-w-7xl mx-auto p4 mt-12 mb-16">
         <div className="flex flex-row justify-between items-center mb-4">
           <h2 className="text-4xl font-medium mb-2">Nhà tuyển dụng hàng đầu</h2>
           <Link
-            to="companies"
+            to="/companies"
             className="text-blue-500 font-normal hover:underline"
           >
             Xem tất cả
@@ -46,7 +54,35 @@ export const HomePage = () => {
       </div>
       {/* Separator */}
       <Separator />
-      {/* Jobs */}
+      {/* Newest Jobs */}
+      <div className="max-w-7xl mx-auto p4 mt-12 mb-16">
+        <div className="flex flex-row justify-between items-center mb-4">
+          <h2 className="text-4xl font-medium mb-2">Công việc mới nhất</h2>
+          <Link
+            to="/jobs"
+            className="text-blue-500 font-normal hover:underline"
+          >
+            Xem tất cả
+          </Link>
+        </div>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {jobs &&
+              jobs.map((job) => (
+                <JobCard
+                  _id={job._id!}
+                  logo={job.company?.logo!}
+                  name={job.name}
+                  salary={job.salary}
+                  location={job.location}
+                  updatedAt={job.updatedAt!}
+                />
+              ))}
+          </div>
+        </div>
+      </div>
+      {/* Separator */}
+      <Separator />
     </>
   )
 }

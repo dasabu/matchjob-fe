@@ -1,9 +1,10 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { getCompaniesApi } from '../apis/company.api'
-import { ICompany } from '../interfaces/interfaces'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-export const useFetchCompanies = (_pageSize: number = 4) => {
+export const useFetchDataWithPagination = <T,>(
+  apiFn: (query: string) => Promise<any>,
+  _pageSize: number
+) => {
   const [current, setCurrent] = useState(1)
   const [pageSize, setPageSize] = useState(_pageSize)
   const [filter, setFilter] = useState('')
@@ -18,13 +19,13 @@ export const useFetchCompanies = (_pageSize: number = 4) => {
   }
 
   const { data } = useQuery({
-    queryKey: ['companies', query],
-    queryFn: () => getCompaniesApi(query),
+    queryKey: [query],
+    queryFn: () => apiFn(query),
     placeholderData: keepPreviousData,
   })
 
   return {
-    companies: data?.data?.data?.result as ICompany[] | null,
+    data: data?.data?.data?.result as T[] | null,
     total: data?.data?.data?.meta.total || 0,
     current,
     pageSize,

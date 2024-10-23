@@ -1,8 +1,4 @@
-import {
-  IBackendResponse,
-  ICompany,
-  IPagination,
-} from '../interfaces/interfaces'
+import { IBackendResponse, ICompany, IPagination } from '../interfaces/schemas'
 import axiosInstance from '../utils/axiosInstance'
 
 export const getCompaniesApi = (query: string) => {

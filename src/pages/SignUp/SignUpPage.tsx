@@ -138,7 +138,10 @@ export const SignUpPage = () => {
           <p className="mt-2 text-sm text-gray-600">
             Đã có tài khoản?{' '}
             <span>
-              <Link className="text-gray-900 underline" to="/signin">
+              <Link
+                className="text-gray-800 font-normal hover:underline"
+                to="/sign-in"
+              >
                 Đăng nhập
               </Link>
             </span>

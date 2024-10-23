@@ -102,7 +102,7 @@ export const SignInPage = () => {
           <p className="mt-2 text-sm text-gray-600">
             Đã có tài khoản{' '}
             <span>
-              <Link className="text-gray-900 underline" to="/signup">
+              <Link className="text-gray-900 underline" to="/sign-up">
                 Đăng ký
               </Link>
             </span>{' '}

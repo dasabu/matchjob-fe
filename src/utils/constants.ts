@@ -15,6 +15,6 @@ export const LOCATIONS_LIST = [
   { label: 'Hà Nội', value: 'HANOI' },
   { label: 'Hồ Chí Minh', value: 'HOCHIMINH' },
   { label: 'Đà Nẵng', value: 'DANANG' },
-  { label: 'Others', value: 'OTHER' },
+  { label: 'Others', value: 'OTHERS' },
   { label: 'Tất cả thành phố', value: 'ALL' },
 ]

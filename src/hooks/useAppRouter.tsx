@@ -16,11 +16,11 @@ export default function useAppRouter() {
       ],
     },
     {
-      path: '/signup',
+      path: '/sign-up',
       element: <SignUpPage />,
     },
     {
-      path: '/signin',
+      path: '/sign-in',
       element: <SignInPage />,
     },
   ])

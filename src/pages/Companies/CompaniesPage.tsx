@@ -1,3 +1,4 @@
+import { getCompaniesApi } from '../../apis/company.api'
 import CompanyCard from '../../components/CompanyCard'
 import Navbar from '../../components/Navbar'
 import {
@@ -9,11 +10,17 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../../components/ui/pagination'
-import { useFetchCompanies } from '../../hooks/useFetchCompanies'
+import { useFetchDataWithPagination } from '../../hooks/useFetchDataWithPagination'
+import { ICompany } from '../../interfaces/schemas'
 
 export const CompaniesPage = () => {
-  const { companies, total, current, pageSize, setCurrent } =
-    useFetchCompanies(8)
+  const {
+    data: companies,
+    total,
+    current,
+    pageSize,
+    setCurrent,
+  } = useFetchDataWithPagination<ICompany>(getCompaniesApi, 8)
 
   const totalPages = Math.ceil(total / pageSize)
 
@@ -25,7 +32,7 @@ export const CompaniesPage = () => {
     const pages = []
     const maxVisiblePages = 1
     let startPage = Math.max(1, current - Math.floor(maxVisiblePages / 2))
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
 
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1)
