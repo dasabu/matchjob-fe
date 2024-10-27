@@ -13,7 +13,7 @@ import {
 import { useFetchDataWithPagination } from '../../hooks/useFetchDataWithPagination'
 import { IJob } from '../../interfaces/schemas'
 
-export const JobsPage = () => {
+export default function JobsPage() {
   const {
     data: jobs,
     total,

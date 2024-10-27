@@ -12,7 +12,7 @@ import {
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { useToast } from '../../hooks/use-toast'
-import { AnimatedTitle } from '../../components/AnimatedTitle/AnimatedTitle'
+import AnimatedTitle from '../../components/AnimatedTitle/AnimatedTitle'
 
 interface IUser {
   name: string
@@ -23,7 +23,7 @@ interface IUser {
   address: string
 }
 
-export const SignInPage = () => {
+export default function SignInPage() {
   const { toast } = useToast()
   const [isSubmit, setIsSubmit] = useState<boolean>(false)
 

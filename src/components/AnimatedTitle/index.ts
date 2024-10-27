@@ -1,3 +1,3 @@
-import { AuthAnimatedTitle } from './AnimatedTitle'
+import AuthAnimatedTitle from './AnimatedTitle'
 
 export default AuthAnimatedTitle

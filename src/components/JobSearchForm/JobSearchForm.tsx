@@ -13,7 +13,7 @@ import {
 import { SKILLS_LIST, LOCATIONS_LIST } from '../../utils/constants'
 import { MultiSelect } from '../ui/mutil-select'
 
-export const JobSearchForm = () => {
+export default function JobSearchForm() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
   const [location, setLocation] = useState<string>()
 

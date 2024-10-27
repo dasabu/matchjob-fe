@@ -14,14 +14,14 @@ interface IJobCardProps {
   updatedAt: string
 }
 
-export const JobCard = ({
+export default function JobCard({
   _id,
   logo,
   name,
   salary,
   location,
   updatedAt,
-}: IJobCardProps) => {
+}: IJobCardProps) {
   return (
     <Card key={_id} className="hover:shadow-lg transition-shadow">
       <CardContent className="p-6 flex items-center space-x-1">

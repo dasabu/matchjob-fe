@@ -7,7 +7,7 @@ interface ICompanyCardProps {
   logo: string
 }
 
-export const CompanyCard = ({ _id, name, logo }: ICompanyCardProps) => {
+export default function CompanyCard({ _id, name, logo }: ICompanyCardProps) {
   return (
     <Card key={_id} className="hover:shadow-lg transition-shadow">
       <CardContent className="p-4 h-[350px] flex flex-col items-center justify-center">

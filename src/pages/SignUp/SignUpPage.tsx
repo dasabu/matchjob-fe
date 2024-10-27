@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { AnimatedTitle } from '../../components/AnimatedTitle/AnimatedTitle'
+import AnimatedTitle from '../../components/AnimatedTitle/AnimatedTitle'
 import { Button } from '../../components/ui/button'
 import { Link, useNavigate } from 'react-router-dom'
 import {
@@ -31,7 +31,7 @@ interface IUser {
   address: string
 }
 
-export const SignUpPage = () => {
+export default function SignUpPage() {
   const { toast } = useToast()
   const [isSubmit, setIsSubmit] = useState<boolean>(false)
 

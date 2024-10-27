@@ -13,7 +13,7 @@ import {
 import { useFetchDataWithPagination } from '../../hooks/useFetchDataWithPagination'
 import { ICompany } from '../../interfaces/schemas'
 
-export const CompaniesPage = () => {
+export default function CompaniesPage() {
   const {
     data: companies,
     total,

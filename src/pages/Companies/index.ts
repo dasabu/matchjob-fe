@@ -1,3 +1,3 @@
-import { CompaniesPage } from './CompaniesPage'
+import CompaniesPage from './CompaniesPage'
 
 export default CompaniesPage

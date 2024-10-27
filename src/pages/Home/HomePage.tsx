@@ -9,7 +9,7 @@ import { ICompany, IJob } from '../../interfaces/schemas'
 import { getJobsApi } from '../../apis/job.api'
 import JobCard from '../../components/JobCard'
 
-export const HomePage = () => {
+export default function HomePage() {
   const { data: companies } = useFetchDataWithPagination<ICompany>(
     getCompaniesApi,
     4

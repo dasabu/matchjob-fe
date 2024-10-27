@@ -1,6 +1,6 @@
 import Typewriter from 'typewriter-effect'
 
-export const AnimatedTitle = () => {
+export default function AnimatedTitle() {
   return (
     <h1 className="font-medium lg:text-6xl">
       <Typewriter
