@@ -6,3 +6,7 @@ export const getJobsApi = (query: string) => {
     `/api/v1/jobs?${query}`
   )
 }
+
+export const getJobByIdApi = (id: string) => {
+  return axiosInstance.get<IBackendResponse<IJob>>(`/api/v1/jobs/${id}`)
+}

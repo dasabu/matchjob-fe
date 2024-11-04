@@ -6,3 +6,9 @@ export const getCompaniesApi = (query: string) => {
     `/api/v1/companies?${query}`
   )
 }
+
+export const getCompanyByIdApi = (id: string) => {
+  return axiosInstance.get<IBackendResponse<ICompany>>(
+    `/api/v1/companies/${id}`
+  )
+}

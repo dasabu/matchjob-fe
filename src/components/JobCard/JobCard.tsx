@@ -1,8 +1,13 @@
 import { BadgeDollarSign, MapPin } from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
-import { formatSalary, getLocationLabel } from '../../utils/helpers'
+import {
+  formatSalary,
+  generateSlug,
+  getLocationLabel,
+} from '../../utils/helpers'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { useNavigate } from 'react-router'
 dayjs.extend(relativeTime)
 
 interface IJobCardProps {
@@ -22,8 +27,21 @@ export default function JobCard({
   location,
   updatedAt,
 }: IJobCardProps) {
+  const navigate = useNavigate()
+
+  const handleNavigateToCompanyDetail = () => {
+    if (_id && name) {
+      const slug = generateSlug(name)
+      navigate(`/jobs/${slug}?id=${_id}`)
+    }
+  }
+
   return (
-    <Card key={_id} className="hover:shadow-lg transition-shadow">
+    <Card
+      key={_id}
+      className="hover:shadow-lg transition-shadow"
+      onClick={handleNavigateToCompanyDetail}
+    >
       <CardContent className="p-6 flex items-center space-x-1">
         <img
           src={`http://localhost:8000/images/company/${logo}`}

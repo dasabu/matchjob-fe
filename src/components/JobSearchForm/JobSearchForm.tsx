@@ -30,7 +30,7 @@ export default function JobSearchForm() {
           placeholder="Tìm theo kỹ năng"
           variant="inverted"
           animation={2}
-          maxCount={3}
+          maxCount={2}
         />
         <Select onValueChange={(value) => setLocation(value)}>
           <SelectTrigger className="w-full md:w-[200px]">
