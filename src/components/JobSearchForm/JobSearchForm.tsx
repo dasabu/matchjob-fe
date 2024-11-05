@@ -3,17 +3,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { MapPin } from 'lucide-react'
 
-import { Button } from '../../ui/button'
-import { Form, FormControl, FormField, FormItem } from '../../ui/form'
+import { Button } from '../ui/button'
+import { Form, FormControl, FormField, FormItem } from '../ui/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select'
-import { MultiSelect } from '../../ui/mutil-select'
-import { SKILLS_LIST, LOCATIONS_LIST } from '../../../utils/constants'
+} from '../ui/select'
+import { MultiSelect } from '../ui/mutil-select'
+import { SKILLS_LIST, LOCATIONS_LIST } from '../../utils/constants'
 
 const formSchema = z.object({
   skills: z.array(z.string()).min(1, {

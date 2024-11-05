@@ -1,12 +1,16 @@
 import LayoutClient from '../layouts/LayoutClient'
-import CompaniesPage from '../pages/client/Companies'
+import CompanyListPage from '../pages/client/CompanyList'
 import CompanyDetailPage from '../pages/client/CompanyDetail'
 import HomePage from '../pages/shared/Home'
 import JobDetailPage from '../pages/client/JobDetail'
-import JobsPage from '../pages/client/Jobs'
+import JobListPage from '../pages/client/JobList'
 import SignInPage from '../pages/shared/SignIn'
 import SignUpPage from '../pages/shared/SignUp'
 import { createBrowserRouter } from 'react-router-dom'
+import LayoutAdmin from '../layouts/LayoutAdmin'
+import CompanyManagementPage from '../pages/admin/CompanyManagement'
+import JobManagementPage from '../pages/admin/JobManagement'
+import UserManagementPage from '../pages/admin/UserManagement'
 
 export default function useAppRouter() {
   const appRouter = createBrowserRouter([
@@ -15,10 +19,28 @@ export default function useAppRouter() {
       element: <LayoutClient />,
       children: [
         { index: true, element: <HomePage /> },
-        { path: '/companies', element: <CompaniesPage /> },
-        { path: '/jobs', element: <JobsPage /> },
-        { path: '/companies/:id', element: <CompanyDetailPage /> },
-        { path: '/jobs/:id', element: <JobDetailPage /> },
+        { path: 'companies', element: <CompanyListPage /> },
+        { path: 'jobs', element: <JobListPage /> },
+        { path: 'companies/:id', element: <CompanyDetailPage /> },
+        { path: 'jobs/:id', element: <JobDetailPage /> },
+      ],
+    },
+    {
+      path: '/admin',
+      element: <LayoutAdmin />,
+      children: [
+        {
+          path: 'companies',
+          element: <CompanyManagementPage />,
+        },
+        {
+          path: 'jobs',
+          element: <JobManagementPage />,
+        },
+        {
+          path: 'users',
+          element: <UserManagementPage />,
+        },
       ],
     },
     {

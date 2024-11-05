@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
-import { generateSlug } from '../../../utils/helpers'
-import { Card, CardContent } from '../../ui/card'
-import { Separator } from '../../ui/separator'
+import { generateSlug } from '../../utils/helpers'
+import { Card, CardContent } from '../ui/card'
+import { Separator } from '../ui/separator'
 
 interface ICompanyCardProps {
   _id: string

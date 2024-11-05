@@ -16,7 +16,7 @@ import { getJobByIdApi } from '../../../apis/job.api'
 import { useLocation } from 'react-router'
 import { formatSalary, getLocationLabel } from '../../../utils/helpers'
 import { useQuery } from '@tanstack/react-query'
-import ResumeApplyModal from '../../../components/client/ResumeApplyModal'
+import ResumeApplyModal from '../../../components/ResumeApplyModal'
 
 export default function JobDetailPage() {
   const [job, setJob] = useState<IJob | undefined>()

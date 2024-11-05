@@ -6,21 +6,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '../../ui/dialog'
-import { Button } from '../../ui/button'
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from '../../ui/form'
-import { Input } from '../../ui/input'
-import { Alert, AlertDescription } from '../../ui/alert'
-import { useToast } from '../../../hooks/use-toast'
+} from '../ui/dialog'
+import { Button } from '../ui/button'
+import { Form, FormField, FormItem, FormLabel, FormControl } from '../ui/form'
+import { Input } from '../ui/input'
+import { Alert, AlertDescription } from '../ui/alert'
+import { useToast } from '../../hooks/use-toast'
 import { Upload } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { IJob } from '../../../interfaces/schemas'
+import { IJob } from '../../interfaces/schemas'
 
 interface IResumeApplyModalProps {
   isOpen: boolean

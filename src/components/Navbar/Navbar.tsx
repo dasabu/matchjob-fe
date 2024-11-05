@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Separator } from '../../ui/separator'
+import { Separator } from '../ui/separator'
 
 export default function Navbar() {
   const { pathname } = useLocation()

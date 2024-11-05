@@ -1,10 +1,10 @@
 import { BadgeDollarSign, MapPin } from 'lucide-react'
-import { Card, CardContent } from '../../ui/card'
+import { Card, CardContent } from '../ui/card'
 import {
   formatSalary,
   generateSlug,
   getLocationLabel,
-} from '../../../utils/helpers'
+} from '../../utils/helpers'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useNavigate } from 'react-router'

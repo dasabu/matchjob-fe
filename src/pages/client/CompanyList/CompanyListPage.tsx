@@ -1,5 +1,5 @@
 import { getCompaniesApi } from '../../../apis/company.api'
-import CompanyCard from '../../../components/client/CompanyCard'
+import CompanyCard from '../../../components/CompanyCard'
 import {
   Pagination,
   PaginationContent,
@@ -12,7 +12,7 @@ import {
 import { useFetchDataWithPagination } from '../../../hooks/useFetchDataWithPagination'
 import { ICompany } from '../../../interfaces/schemas'
 
-export default function CompaniesPage() {
+export default function CompanyListPage() {
   const {
     data: companies,
     total,

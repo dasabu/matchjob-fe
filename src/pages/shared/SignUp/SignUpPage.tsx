@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Link } from 'react-router-dom'
 
-import AnimatedTitle from '../../../components/shared/AnimatedTitle/AnimatedTitle'
+import AnimatedTitle from '../../../components/AnimatedTitle/AnimatedTitle'
 import { Button } from '../../../components/ui/button'
 import {
   Card,

@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
-import JobSearchForm from '../../../components/shared/JobSearchForm'
+import JobSearchForm from '../../../components/JobSearchForm'
 import { Separator } from '../../../components/ui/separator'
-import CompanyCard from '../../../components/client/CompanyCard'
+import CompanyCard from '../../../components/CompanyCard'
 import { useFetchDataWithPagination } from '../../../hooks/useFetchDataWithPagination'
 import { getCompaniesApi } from '../../../apis/company.api'
 import { ICompany, IJob } from '../../../interfaces/schemas'
 import { getJobsApi } from '../../../apis/job.api'
-import JobCard from '../../../components/client/JobCard'
+import JobCard from '../../../components/JobCard'
 
 export default function HomePage() {
   const { data: companies } = useFetchDataWithPagination<ICompany>(

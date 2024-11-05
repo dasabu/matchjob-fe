@@ -1,5 +1,5 @@
 import { getJobsApi } from '../../../apis/job.api'
-import JobCard from '../../../components/client/JobCard'
+import JobCard from '../../../components/JobCard'
 import {
   Pagination,
   PaginationContent,
@@ -12,7 +12,7 @@ import {
 import { useFetchDataWithPagination } from '../../../hooks/useFetchDataWithPagination'
 import { IJob } from '../../../interfaces/schemas'
 
-export default function JobsPage() {
+export default function JobListPage() {
   const {
     data: jobs,
     total,
