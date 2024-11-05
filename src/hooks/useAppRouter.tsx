@@ -1,16 +1,18 @@
-import CompaniesPage from '../pages/Companies'
-import CompanyDetailPage from '../pages/CompanyDetail'
-import HomePage from '../pages/Home'
-import JobDetailPage from '../pages/JobDetail'
-import JobsPage from '../pages/Jobs'
-import SignInPage from '../pages/SignIn'
-import SignUpPage from '../pages/SignUp'
+import LayoutClient from '../layouts/LayoutClient'
+import CompaniesPage from '../pages/client/Companies'
+import CompanyDetailPage from '../pages/client/CompanyDetail'
+import HomePage from '../pages/shared/Home'
+import JobDetailPage from '../pages/client/JobDetail'
+import JobsPage from '../pages/client/Jobs'
+import SignInPage from '../pages/shared/SignIn'
+import SignUpPage from '../pages/shared/SignUp'
 import { createBrowserRouter } from 'react-router-dom'
 
 export default function useAppRouter() {
   const appRouter = createBrowserRouter([
     {
       path: '/',
+      element: <LayoutClient />,
       children: [
         { index: true, element: <HomePage /> },
         { path: '/companies', element: <CompaniesPage /> },
@@ -35,15 +37,15 @@ export default function useAppRouter() {
 /*
 / (root)
 │
-├── "/signin" (SignInPage)
-└── "/signup" (SignUpPage)
+├── "/sign-in" (SignInPage)
+└── "/sign-up" (SignUpPage)
 │
 ├── LayoutClient
 │   ├── "/" (HomePage)
-│   ├── "/job" (ClientJobPage)
-│   ├── "/job/:id" (ClientJobDetailPage)
-│   ├── "/company" (ClientCompanyPage)
-│   └── "/company/:id" (ClientCompanyDetailPage)
+│   ├── "/job" (JobPage)
+│   ├── "/job/:id" (JobDetailPage)
+│   ├── "/company" (CompanyPage)
+│   └── "/company/:id" (CompanyDetailPage)
 │
 ├── /admin
 │   ├── LayoutAdmin (ProtectedRoute)

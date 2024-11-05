@@ -1,7 +1,4 @@
-/*
-Note: This is not the original component from shadcn-ui
-Github: https://github.com/sersavan/shadcn-multi-select-component
-*/
+// src/components/multi-select.tsx
 
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -11,14 +8,17 @@ import {
   ChevronDown,
   XIcon,
   WandSparkles,
-  Search,
 } from 'lucide-react'
 
 import { cn } from '../../lib/utils'
-import { Separator } from '../ui/separator'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { Separator } from '../../components/ui/separator'
+import { Button } from '../../components/ui/button'
+import { Badge } from '../../components/ui/badge'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '../../components/ui/popover'
 import {
   Command,
   CommandEmpty,
@@ -27,7 +27,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '../ui/command'
+} from '../../components/ui/command'
 
 /**
  * Variants for the multi-select component to handle different styles.
@@ -202,7 +202,7 @@ export const MultiSelect = React.forwardRef<
             {...props}
             onClick={handleTogglePopover}
             className={cn(
-              'flex w-full p-1 rounded-md border h-auto items-center justify-between bg-inherit hover:bg-inherit',
+              'flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit',
               className
             )}
           >
@@ -216,9 +216,10 @@ export const MultiSelect = React.forwardRef<
                       <Badge
                         key={value}
                         className={cn(
-                          isAnimating ? 'animate-bounce' : '',
-                          multiSelectVariants({ variant }),
-                          'font-normal'
+                          isAnimating
+                            ? 'animate-bounce font-normal'
+                            : 'font-normal',
+                          multiSelectVariants({ variant })
                         )}
                         style={{ animationDuration: `${animation}s` }}
                       >
@@ -239,13 +240,13 @@ export const MultiSelect = React.forwardRef<
                   {selectedValues.length > maxCount && (
                     <Badge
                       className={cn(
-                        'bg-transparent text-foreground border-foreground/1 hover:bg-transparent font-medium',
+                        'bg-transparent text-foreground border-foreground/1 hover:bg-transparent font-normal',
                         isAnimating ? 'animate-bounce' : '',
                         multiSelectVariants({ variant })
                       )}
                       style={{ animationDuration: `${animation}s` }}
                     >
-                      {`+ ${selectedValues.length - maxCount} more`}
+                      {`+ ${selectedValues.length - maxCount}`}
                       <XCircle
                         className="ml-2 h-4 w-4 cursor-pointer"
                         onClick={(event) => {
@@ -273,8 +274,7 @@ export const MultiSelect = React.forwardRef<
               </div>
             ) : (
               <div className="flex items-center justify-between w-full mx-auto">
-                <span className="text-sm text-muted-foreground mx-3 flex items-center">
-                  <Search className="mr-2" />
+                <span className="text-sm text-muted-foreground mx-3">
                   {placeholder}
                 </span>
                 <ChevronDown className="h-4 cursor-pointer text-muted-foreground mx-2" />

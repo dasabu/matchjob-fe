@@ -5,7 +5,7 @@ export const getLocationLabel = (value: string) => {
   if (locationFilter.length) {
     return locationFilter[0].label
   } else {
-    return 'Somewhere'
+    return 'Others'
   }
 }
 

@@ -51,8 +51,13 @@
   font-style: normal;
 }
 
-html {
+html,
+body,
+:root {
   height: 100%;
+}
+
+html {
   line-height: 1.2;
 }
 
