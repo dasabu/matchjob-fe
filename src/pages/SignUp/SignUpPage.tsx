@@ -3,8 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Link } from 'react-router-dom'
 
-import AnimatedTitle from '../../../components/AnimatedTitle/AnimatedTitle'
-import { Button } from '../../../components/ui/button'
+import AnimatedTitle from '../../components/AnimatedTitle/AnimatedTitle'
+import { Button } from '../../components/ui/button'
 import {
   Card,
   CardContent,
@@ -12,7 +12,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../../components/ui/card'
+} from '../../components/ui/card'
 import {
   Form,
   FormControl,
@@ -20,16 +20,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../components/ui/form'
-import { Input } from '../../../components/ui/input'
+} from '../../components/ui/form'
+import { Input } from '../../components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select'
-import { useToast } from '../../../hooks/use-toast'
+} from '../../components/ui/select'
+import { useToast } from '../../hooks/use-toast'
 
 const formSchema = z.object({
   name: z.string().min(2, {

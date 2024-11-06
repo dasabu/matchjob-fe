@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router'
-import AdminSidebar from '../../components/AdminSidebar'
+import AdminSidebar from '../../components/admin/AdminSidebar'
 import { SidebarProvider, SidebarTrigger } from '../../components/ui/sidebar'
 
 interface ILayoutAdminProps {

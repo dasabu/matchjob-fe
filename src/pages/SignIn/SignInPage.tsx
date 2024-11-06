@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
-import { Button } from '../../../components/ui/button'
+import { Button } from '../../components/ui/button'
 import {
   Form,
   FormControl,
@@ -11,8 +11,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../components/ui/form'
-import { Input } from '../../../components/ui/input'
+} from '../../components/ui/form'
+import { Input } from '../../components/ui/input'
 import {
   Card,
   CardContent,
@@ -20,8 +20,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../../components/ui/card'
-import { useToast } from '../../../hooks/use-toast'
+} from '../../components/ui/card'
+import { useToast } from '../../hooks/use-toast'
 
 const formSchema = z.object({
   email: z.string().email({

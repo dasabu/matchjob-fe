@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select'
-import { MultiSelect } from '../ui/mutil-select'
+import { MultiSelect } from '../ui/multi-select'
 import { SKILLS_LIST, LOCATIONS_LIST } from '../../utils/constants'
 
 const formSchema = z.object({

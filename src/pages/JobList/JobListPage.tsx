@@ -1,5 +1,5 @@
-import { getJobsApi } from '../../../apis/job.api'
-import JobCard from '../../../components/JobCard'
+import { getJobsApi } from '../../apis/job.api'
+import JobCard from '../../components/JobCard'
 import {
   Pagination,
   PaginationContent,
@@ -8,9 +8,9 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '../../../components/ui/pagination'
-import { useFetchDataWithPagination } from '../../../hooks/useFetchDataWithPagination'
-import { IJob } from '../../../interfaces/schemas'
+} from '../../components/ui/pagination'
+import { useFetchDataWithPagination } from '../../hooks/useFetchDataWithPagination'
+import { IJob } from '../../interfaces/schemas'
 
 export default function JobListPage() {
   const {

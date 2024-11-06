@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react'
-import { Skeleton } from '../../../components/ui/skeleton'
+import { Skeleton } from '../../components/ui/skeleton'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '../../../components/ui/card'
-import { Button } from '../../../components/ui/button'
-import { Separator } from '../../../components/ui/separator'
-import { Badge } from '../../../components/ui/badge'
+} from '../../components/ui/card'
+import { Button } from '../../components/ui/button'
+import { Separator } from '../../components/ui/separator'
+import { Badge } from '../../components/ui/badge'
 import { Clock, DollarSign, MapPin } from 'lucide-react'
 import dayjs from 'dayjs'
-import { IJob } from '../../../interfaces/schemas'
-import { getJobByIdApi } from '../../../apis/job.api'
+import { IJob } from '../../interfaces/schemas'
+import { getJobByIdApi } from '../../apis/job.api'
 import { useLocation } from 'react-router'
-import { formatSalary, getLocationLabel } from '../../../utils/helpers'
+import { formatSalary, getLocationLabel } from '../../utils/helpers'
 import { useQuery } from '@tanstack/react-query'
-import ResumeApplyModal from '../../../components/ResumeApplyModal'
+import ResumeApplyModal from '../../components/ResumeApplyModal'
 
 export default function JobDetailPage() {
   const [job, setJob] = useState<IJob | undefined>()

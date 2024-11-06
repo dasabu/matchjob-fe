@@ -5,12 +5,12 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '../../../components/ui/card'
-import { Skeleton } from '../../../components/ui/skeleton'
+} from '../../components/ui/card'
+import { Skeleton } from '../../components/ui/skeleton'
 import parse from 'html-react-parser'
-import { getCompanyByIdApi } from '../../../apis/company.api'
+import { getCompanyByIdApi } from '../../apis/company.api'
 import { useQuery } from '@tanstack/react-query'
-import { ICompany } from '../../../interfaces/schemas'
+import { ICompany } from '../../interfaces/schemas'
 import { useEffect, useState } from 'react'
 
 export default function CompanyDetailPage() {
