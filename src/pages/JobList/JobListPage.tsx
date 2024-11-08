@@ -1,15 +1,8 @@
 import { getJobsApi } from '../../apis/job.api'
 import JobCard from '../../components/JobCard'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '../../components/ui/pagination'
+import PaginationComponent from '../../components/PaginationComponent'
 import { useFetchDataWithPagination } from '../../hooks/useFetchDataWithPagination'
+import { usePagination } from '../../hooks/usePagination'
 import { IJob } from '../../interfaces/schemas'
 
 export default function JobListPage() {
@@ -20,62 +13,13 @@ export default function JobListPage() {
     pageSize,
     setCurrent,
   } = useFetchDataWithPagination<IJob>(getJobsApi, 8)
-  console.log(jobs)
-  const totalPages = Math.ceil(total / pageSize)
 
-  const handlePageChange = (page: number) => {
-    setCurrent(page)
-  }
-
-  const renderPageNumbers = () => {
-    const pages = []
-    const maxVisiblePages = 1
-    let startPage = Math.max(1, current - Math.floor(maxVisiblePages / 2))
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1)
-    }
-
-    if (startPage > 1) {
-      pages.push(
-        <PaginationItem key="first">
-          <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
-        </PaginationItem>
-      )
-      if (startPage > 2) {
-        pages.push(<PaginationEllipsis key="ellipsis-start" />)
-      }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            onClick={() => handlePageChange(i)}
-            isActive={i === current}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      )
-    }
-
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        pages.push(<PaginationEllipsis key="ellipsis-end" />)
-      }
-      pages.push(
-        <PaginationItem key="last">
-          <PaginationLink onClick={() => handlePageChange(totalPages)}>
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      )
-    }
-
-    return pages
-  }
+  const { renderPageNumbers, handlePrevious, handleNext } = usePagination({
+    total,
+    current,
+    pageSize,
+    onPageChange: setCurrent,
+  })
 
   return (
     <>
@@ -85,23 +29,13 @@ export default function JobListPage() {
             Công việc mới nhất
           </h2>
           <div>
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => handlePageChange(Math.max(1, current - 1))}
-                  />
-                </PaginationItem>
-                {renderPageNumbers()}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() =>
-                      handlePageChange(Math.min(totalPages, current + 1))
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+            <PaginationComponent
+              current={current}
+              onPageChange={setCurrent}
+              renderPageNumbers={renderPageNumbers}
+              handlePrevious={handlePrevious}
+              handleNext={handleNext}
+            />
           </div>
         </div>
         <div className="space-y-4">
@@ -110,6 +44,7 @@ export default function JobListPage() {
               jobs.map(
                 ({ _id, name, company, salary, location, updatedAt }) => (
                   <JobCard
+                    key={_id!}
                     _id={_id!}
                     logo={company?.logo!}
                     name={name}

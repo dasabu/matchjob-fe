@@ -1,20 +1,18 @@
-import * as React from 'react'
-
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
-  // Pagination
-  getPaginationRowModel,
-  // Sorting
-  SortingState,
-  getSortedRowModel,
-  // Filtering
-  ColumnFiltersState,
-  getFilteredRowModel,
-  // Visibility
-  VisibilityState,
+  // // Pagination
+  // getPaginationRowModel,
+  // // Sorting
+  // SortingState,
+  // getSortedRowModel,
+  // // Filtering
+  // ColumnFiltersState,
+  // getFilteredRowModel,
+  // // Visibility
+  // VisibilityState,
 } from '@tanstack/react-table'
 
 import {
@@ -26,71 +24,55 @@ import {
   TableRow,
 } from '../ui/table'
 
-import { Button } from './button'
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from './dropdown-menu'
-import { ChevronsLeft, ChevronsRight } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './select'
-
 interface IDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-const PAGINATION_OPTIONS = [3, 5, 10, 15, 20, 30, 40, 50]
+// const PAGINATION_OPTIONS = [3, 5, 10, 15, 20, 30, 40, 50]
 
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: IDataTableProps<TData, TValue>) {
-  // For sorting
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  // For filtering
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  // For visibility
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  // // For sorting
+  // const [sorting, setSorting] = React.useState<SortingState>([])
+  // // For filtering
+  // const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  //   []
+  // )
+  // // For visibility
+  // const [columnVisibility, setColumnVisibility] =
+  //   React.useState<VisibilityState>({})
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    // Pagination
-    getPaginationRowModel: getPaginationRowModel(),
-    // Sorting
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    // Filtering
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    // Visibility
-    onColumnVisibilityChange: setColumnVisibility,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-    },
+    // // Pagination
+    // getPaginationRowModel: getPaginationRowModel(),
+    // // Sorting
+    // onSortingChange: setSorting,
+    // getSortedRowModel: getSortedRowModel(),
+    // // Filtering
+    // onColumnFiltersChange: setColumnFilters,
+    // getFilteredRowModel: getFilteredRowModel(),
+    // // Visibility
+    // onColumnVisibilityChange: setColumnVisibility,
+    // state: {
+    //   sorting,
+    //   columnFilters,
+    //   columnVisibility,
+    // },
   })
 
   return (
     <div>
       {/* Filtering && Visibility */}
-      <div className="flex items-center py-4">
+      <div className="flex items-center">
         {/* Filtering */}
         {/* Visibility */}
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="font-normal ml-auto">
               Columns
@@ -115,7 +97,7 @@ export function DataTable<TData, TValue>({
                 )
               })}
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -123,8 +105,14 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  // Get width from column meta
+                  const widthClass =
+                    header.column.columnDef.meta?.width || 'w-auto'
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className={`${widthClass} border-r last:border-r-0 border-gray-200`}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -168,7 +156,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
+      {/* <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -220,7 +208,7 @@ export function DataTable<TData, TValue>({
             </Button>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -38,7 +38,6 @@ export default function JobCard({
 
   return (
     <Card
-      key={_id}
       className="hover:shadow-lg transition-shadow"
       onClick={handleNavigateToCompanyDetail}
     >

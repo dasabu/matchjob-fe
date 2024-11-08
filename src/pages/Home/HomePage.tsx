@@ -13,6 +13,7 @@ export default function HomePage() {
     getCompaniesApi,
     4
   )
+
   const { data: jobs } = useFetchDataWithPagination<IJob>(getJobsApi, 6)
 
   return (
@@ -44,7 +45,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {companies &&
               companies.map(({ _id, name, logo }) => (
-                <CompanyCard _id={_id!} name={name!} logo={logo} />
+                <CompanyCard key={_id!} _id={_id!} name={name!} logo={logo} />
               ))}
           </div>
         </div>
@@ -67,6 +68,7 @@ export default function HomePage() {
             {jobs &&
               jobs.map((job) => (
                 <JobCard
+                  key={job._id!}
                   _id={job._id!}
                   logo={job.company?.logo!}
                   name={job.name}

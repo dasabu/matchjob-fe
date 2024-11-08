@@ -1,37 +1,40 @@
 import { useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { IBackendResponse, IPagination } from '../interfaces/schemas'
+import { AxiosResponse } from 'axios'
+import { buildQuery } from '../utils/helpers'
 
 export const useFetchDataWithPagination = <T,>(
-  apiFn: (query: string) => Promise<any>,
-  _pageSize: number
+  apiFn: (
+    query: string
+  ) => Promise<AxiosResponse<IBackendResponse<IPagination<T>>>>,
+  _pageSize: number,
+  _current: number = 1,
+  _filter: Record<string, string> = {},
+  _sort: string = ''
 ) => {
-  const [current, setCurrent] = useState(1)
+  const [current, setCurrent] = useState(_current)
   const [pageSize, setPageSize] = useState(_pageSize)
-  const [filter, setFilter] = useState('')
-  const [sortQuery, setSortQuery] = useState('sort=-updatedAt')
+  const [filter, setFilter] = useState(_filter)
+  const [sort, setSort] = useState(_sort)
 
-  let query = `current=${current}&pageSize=${pageSize}`
-  if (filter) {
-    query += `&${filter}`
-  }
-  if (sortQuery) {
-    query += `&${sortQuery}`
-  }
+  const query = buildQuery(current, pageSize, filter, sort)
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: [query],
-    queryFn: () => apiFn(query),
+    queryFn: async () => await apiFn(query),
     placeholderData: keepPreviousData,
   })
 
   return {
     data: data?.data?.data?.result as T[] | null,
-    total: data?.data?.data?.meta.total || 0,
+    total: data?.data?.data?.meta?.total || 0,
     current,
     pageSize,
     setCurrent,
     setPageSize,
     setFilter,
-    setSortQuery,
+    setSort,
+    refetch,
   }
 }

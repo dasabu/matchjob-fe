@@ -3,7 +3,11 @@ import useAppRouter from './hooks/useAppRouter'
 
 function App() {
   const router = useAppRouter()
-  return <RouterProvider router={router} />
+  return (
+    <>
+      <RouterProvider router={router} />
+    </>
+  )
 }
 
 export default App

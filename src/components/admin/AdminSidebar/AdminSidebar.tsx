@@ -46,13 +46,9 @@ export default function AdminSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="font-normal text-base">
-                    {/* <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a> */}
+                  <SidebarMenuButton asChild className="font-normal">
                     <Link to={item.url}>
-                      <div className="flex flex-row gap-4 items-center justify-between">
+                      <div className="flex flex-row gap-2 items-center justify-between">
                         <item.icon />
                         {item.title}
                       </div>

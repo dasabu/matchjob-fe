@@ -1,4 +1,4 @@
-export const SKILLS_LIST = [
+export const SKILL_LIST = [
   { label: 'React.JS', value: 'REACT.JS' },
   { label: 'React Native', value: 'REACTNATIVE' },
   { label: 'Vue.JS', value: 'VUE.JS' },
@@ -11,10 +11,12 @@ export const SKILLS_LIST = [
   { label: 'Fullstack', value: 'FULLSTACK' },
 ]
 
-export const LOCATIONS_LIST = [
+export const LOCATION_LIST = [
   { label: 'Hà Nội', value: 'HANOI' },
   { label: 'Hồ Chí Minh', value: 'HOCHIMINH' },
   { label: 'Đà Nẵng', value: 'DANANG' },
   { label: 'Others', value: 'OTHERS' },
   { label: 'Tất cả thành phố', value: 'ALL' },
 ]
+
+export const PAGINATION_OPTIONS = [3, 5, 10, 15, 20, 30, 40, 50]

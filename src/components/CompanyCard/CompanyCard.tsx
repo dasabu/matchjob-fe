@@ -21,7 +21,6 @@ export default function CompanyCard({ _id, name, logo }: ICompanyCardProps) {
 
   return (
     <Card
-      key={_id}
       className="hover:shadow-lg transition-shadow"
       onClick={handleNavigateToCompanyDetail}
     >

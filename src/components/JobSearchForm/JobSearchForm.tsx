@@ -1,7 +1,6 @@
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { MapPin } from 'lucide-react'
 
 import { Button } from '../ui/button'
 import { Form, FormControl, FormField, FormItem } from '../ui/form'
@@ -13,7 +12,7 @@ import {
   SelectValue,
 } from '../ui/select'
 import { MultiSelect } from '../ui/multi-select'
-import { SKILLS_LIST, LOCATIONS_LIST } from '../../utils/constants'
+import { SKILL_LIST, LOCATION_LIST } from '../../utils/constants'
 
 const formSchema = z.object({
   skills: z.array(z.string()).min(1, {
@@ -52,7 +51,7 @@ export default function JobSearchForm() {
                     control={form.control}
                     render={({ field }) => (
                       <MultiSelect
-                        options={SKILLS_LIST}
+                        options={SKILL_LIST}
                         onValueChange={field.onChange}
                         placeholder="Tìm theo kỹ năng"
                         maxCount={3}
@@ -82,7 +81,7 @@ export default function JobSearchForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {LOCATIONS_LIST.map((loc) => (
+                    {LOCATION_LIST.map((loc) => (
                       <SelectItem key={loc.value} value={loc.value}>
                         {loc.label}
                       </SelectItem>

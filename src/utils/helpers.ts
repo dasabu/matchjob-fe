@@ -1,7 +1,8 @@
-import { LOCATIONS_LIST } from './constants'
+import { LOCATION_LIST } from './constants'
+import queryString from 'query-string'
 
 export const getLocationLabel = (value: string) => {
-  const locationFilter = LOCATIONS_LIST.filter((item) => item.value === value)
+  const locationFilter = LOCATION_LIST.filter((item) => item.value === value)
   if (locationFilter.length) {
     return locationFilter[0].label
   } else {
@@ -46,4 +47,28 @@ export const generateSlug = (str: string) => {
     .replace(/-+/g, '-') // Loại bỏ dấu '-' dư thừa
     .replace(/^-|-$/g, '') // Loại bỏ dấu '-' đầu và cuối chuỗi nếu có
   return str
+}
+
+export const shortenObjectId = (id: string | undefined): string => {
+  if (id) return `${id.slice(0, 4)}...${id.slice(-4)}`
+  else return ''
+}
+
+export const buildQuery = (
+  current: number,
+  pageSize: number,
+  filter: Record<string, string> = {},
+  sort?: string
+) => {
+  const queryObject: Record<string, any> = {
+    current,
+    pageSize,
+    sort: sort || '-updatedAt',
+    ...filter,
+  }
+
+  return queryString.stringify(queryObject, {
+    skipNull: true,
+    skipEmptyString: true,
+  })
 }
