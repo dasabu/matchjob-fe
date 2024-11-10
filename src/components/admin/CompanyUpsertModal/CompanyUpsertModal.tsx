@@ -101,7 +101,6 @@ export default function CompanyUpsertModal({
 
       if (response.status === 200 || response.status === 201) {
         toast({ title: response.data.message })
-        // onSuccess()
         handleReset()
       } else {
         toast({ title: response.data.message, variant: 'destructive' })

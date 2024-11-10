@@ -101,26 +101,18 @@ export default function CompanyManagementPage() {
 
   const confirmDeleteCompany = async () => {
     if (deletedCompanyId) {
-      const result = await deleteCompanyApi(deletedCompanyId)
-      if (result?.data?.statusCode === 200) {
-        toast({
-          title: 'Success',
-          description: 'Xoá công ty thành công',
-        })
-        refetch()
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Có lỗi xảy ra',
-        })
+      try {
+        const response = await deleteCompanyApi(deletedCompanyId)
+        if (response?.data?.statusCode === 200) {
+          toast({ title: response.data.message })
+        } else {
+          toast({ title: response.data.message, variant: 'destructive' })
+        }
+      } catch (error) {
+        toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
       }
     } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Không tìm thấy công ty',
-      })
+      toast({ title: 'Không tìm thấy công ty', variant: 'destructive' })
     }
   }
 

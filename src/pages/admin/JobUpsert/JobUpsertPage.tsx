@@ -36,7 +36,7 @@ import { getCompaniesApi } from '../../../apis/company.api'
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ICompany, IJob } from '../../../interfaces/schemas'
-import { useLocation } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -45,7 +45,12 @@ import {
   BreadcrumbSeparator,
 } from '../../../components/ui/breadcrumb'
 import { Link } from 'react-router-dom'
-import { getJobByIdApi } from '../../../apis/job.api'
+import {
+  createJobApi,
+  getJobByIdApi,
+  updateJobApi,
+} from '../../../apis/job.api'
+import { toast } from '../../../hooks/use-toast'
 
 const formSchema = z.object({
   name: z.string().min(2),
@@ -66,8 +71,8 @@ const formSchema = z.object({
 })
 
 export default function JobUpsertPage() {
-  const [companies, setCompanies] = useState<ICompany[] | undefined>()
-  const [job, setJob] = useState<IJob | undefined>()
+  const [companiesData, setCompaniesData] = useState<ICompany[] | undefined>()
+  const [jobData, setJobData] = useState<IJob | undefined>()
 
   const [startDate, setStartDate] = useState<Date | undefined>()
   const [endDate, setEndDate] = useState<Date | undefined>()
@@ -76,7 +81,9 @@ export default function JobUpsertPage() {
   const params = new URLSearchParams(location.search)
   const id = params?.get('id')
 
-  const { data: jobData } = useQuery({
+  const navigate = useNavigate()
+
+  const { data: fetchedJobData } = useQuery({
     queryKey: ['job', id],
     queryFn: async () => {
       if (id) {
@@ -86,61 +93,91 @@ export default function JobUpsertPage() {
   })
 
   useEffect(() => {
-    if (jobData?.data?.data) {
-      setJob(jobData?.data?.data)
+    if (fetchedJobData?.data?.data) {
+      setJobData(fetchedJobData?.data?.data)
     }
-  }, [jobData])
-
-  console.log(job)
+  }, [fetchedJobData])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: job?.name || '',
-      skills: job?.skills || [],
-      location: job?.location || '',
-      salary: job?.salary || 0,
-      quantity: job?.quantity || 1,
-      level: job?.level || '',
-      company: job?.company || undefined,
-      startDate: job?.startDate || undefined,
-      endDate: job?.endDate || undefined,
-      isActive: job?.isActive || true,
-      description: job?.description || '',
+      name: jobData?.name || '',
+      skills: jobData?.skills || [],
+      location: jobData?.location || '',
+      salary: jobData?.salary || 0,
+      quantity: jobData?.quantity || 1,
+      level: jobData?.level || '',
+      company: jobData?.company || undefined,
+      startDate: jobData?.startDate || undefined,
+      endDate: jobData?.endDate || undefined,
+      isActive: jobData?.isActive || true,
+      description: jobData?.description || '',
     },
   })
 
   useEffect(() => {
-    if (job) {
+    if (jobData) {
       form.reset({
-        name: job.name,
-        skills: job.skills,
-        location: job.location,
-        salary: job.salary,
-        quantity: job.quantity,
-        level: job.level,
-        company: job.company,
-        startDate: job.startDate,
-        endDate: job.endDate,
-        isActive: job.isActive,
-        description: job.description,
+        name: jobData.name,
+        skills: jobData.skills,
+        location: jobData.location,
+        salary: jobData.salary,
+        quantity: jobData.quantity,
+        level: jobData.level,
+        company: jobData.company,
+        startDate: jobData.startDate,
+        endDate: jobData.endDate,
+        isActive: jobData.isActive,
+        description: jobData.description,
+      })
+    } else {
+      form.reset({
+        name: '',
+        skills: [],
+        location: '',
+        salary: 0,
+        quantity: 1,
+        level: '',
+        company: {},
+        startDate: undefined,
+        endDate: undefined,
+        isActive: true,
+        description: '',
       })
     }
-  }, [job, form])
+  }, [jobData, form])
 
-  const { data: companiesData } = useQuery({
+  const { data: fetchedCompaniesData } = useQuery({
     queryKey: ['companies'],
     queryFn: async () => await getCompaniesApi(`current=1&pageSize=100`),
   })
 
   useEffect(() => {
-    if (companiesData?.data?.data?.result) {
-      setCompanies(companiesData.data.data.result)
+    if (fetchedCompaniesData?.data?.data?.result) {
+      setCompaniesData(fetchedCompaniesData.data.data.result)
     }
-  }, [companiesData])
+  }, [fetchedCompaniesData])
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+  const onSubmit = async () => {
+    try {
+      let response
+
+      if (jobData?._id) {
+        response = await updateJobApi(jobData, jobData._id)
+      } else {
+        response = await createJobApi(jobData!)
+      }
+
+      if (response.status === 200 || response.status === 201) {
+        toast({ title: response.data.message })
+        form.reset()
+        navigate('/admin/jobs')
+      } else {
+        toast({ title: response.data.message, variant: 'destructive' })
+      }
+    } catch (error) {
+      toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
+    }
   }
 
   return (
@@ -189,6 +226,7 @@ export default function JobUpsertPage() {
                     Kỹ năng yêu cầu
                   </FormLabel>
                   <MultiSelect
+                    defaultValue={jobData?.skills}
                     options={SKILL_LIST}
                     onValueChange={field.onChange}
                     placeholder="Kỹ năng..."
@@ -322,8 +360,8 @@ export default function JobUpsertPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {companies &&
-                        companies.map((company) => (
+                      {companiesData &&
+                        companiesData.map((company) => (
                           <SelectItem key={company._id} value={company.name!}>
                             {company.name!}
                           </SelectItem>
@@ -459,7 +497,7 @@ export default function JobUpsertPage() {
                     Job Description
                   </FormLabel>
                   <FormControl>
-                    <ReactQuill className="h-96" />
+                    <ReactQuill className="h-72" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -468,11 +506,16 @@ export default function JobUpsertPage() {
           </div>
 
           <div className="flex justify-start space-x-4">
-            <Button type="submit">Save</Button>
+            <Button type="submit" onClick={onSubmit}>
+              {id ? 'Cập nhật' : 'Tạo'}
+            </Button>
             <Button
               type="button"
               variant="outline"
-              onClick={() => form.reset()}
+              onClick={() => {
+                navigate('/admin/jobs')
+                form.reset()
+              }}
             >
               Hủy
             </Button>

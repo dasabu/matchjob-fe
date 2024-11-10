@@ -1,8 +1,7 @@
 import { columns } from './columns'
 
-import { deleteCompanyApi } from '../../../apis/company.api'
 import { useFetchDataWithPagination } from '../../../hooks/useFetchDataWithPagination'
-import { ICompany, IJob } from '../../../interfaces/schemas'
+import { IJob } from '../../../interfaces/schemas'
 import { usePagination } from '../../../hooks/usePagination'
 import { useEffect, useState } from 'react'
 
@@ -20,17 +19,17 @@ import {
   SelectValue,
 } from '../../../components/ui/select'
 import PaginationComponent from '../../../components/PaginationComponent'
-import { toast } from '../../../hooks/use-toast'
-import { getJobsApi } from '../../../apis/job.api'
+import { deleteJobApi, getJobsApi } from '../../../apis/job.api'
 import { useNavigate } from 'react-router'
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbSeparator,
 } from '../../../components/ui/breadcrumb'
 import { Link } from 'react-router-dom'
+import JobDeleteDialog from '../../../components/admin/JobDeleteDialog'
+import { toast } from '../../../hooks/use-toast'
 
 export default function CompanyManagementPage() {
   const navigate = useNavigate()
@@ -103,6 +102,23 @@ export default function CompanyManagementPage() {
   const handleDeleteJob = (jobId: string | undefined) => {
     setDeletedJobId(jobId)
     setIsOpenDialog(true)
+  }
+
+  const confirmDeleteJob = async () => {
+    if (deletedJobId) {
+      try {
+        const response = await deleteJobApi(deletedJobId)
+        if (response?.data?.statusCode === 200) {
+          toast({ title: response.data.message })
+        } else {
+          toast({ title: response.data.message, variant: 'destructive' })
+        }
+      } catch (error) {
+        toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
+      }
+    } else {
+      toast({ title: 'Không tìm thấy công việc', variant: 'destructive' })
+    }
   }
 
   return (
@@ -210,16 +226,15 @@ export default function CompanyManagementPage() {
           />
         )}
       </div>
-      {/* Delete company alert dialog */}
-      {/* <CompanyDeleteDialog
+      <JobDeleteDialog
         isOpenDialog={isOpenDialog}
         setIsOpenDialog={setIsOpenDialog}
-        onConfirm={confirmDeleteCompany}
+        onConfirm={confirmDeleteJob}
         onCancel={() => {
           setIsOpenDialog(false)
-          setDeletedCompanyId(undefined)
+          setDeletedJobId(undefined)
         }}
-      /> */}
+      />
     </div>
   )
 }
