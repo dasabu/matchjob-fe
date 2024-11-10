@@ -1,7 +1,7 @@
 import LayoutClient from '../layouts/LayoutClient'
 import CompanyListPage from '../pages/CompanyList'
 import CompanyDetailPage from '../pages/CompanyDetail'
-import HomePage from '../pages/Home'
+import HomePage from '../pages/HomePage'
 import JobDetailPage from '../pages/JobDetail'
 import JobListPage from '../pages/JobList'
 import SignInPage from '../pages/SignIn'
@@ -11,6 +11,7 @@ import LayoutAdmin from '../layouts/LayoutAdmin'
 import CompanyManagementPage from '../pages/admin/CompanyManagement'
 import JobManagementPage from '../pages/admin/JobManagement'
 import UserManagementPage from '../pages/admin/UserManagement'
+import JobUpsertPage from '../pages/admin/JobUpsert'
 
 export default function useAppRouter() {
   const appRouter = createBrowserRouter([
@@ -35,7 +36,16 @@ export default function useAppRouter() {
         },
         {
           path: 'jobs',
-          element: <JobManagementPage />,
+          children: [
+            {
+              index: true,
+              element: <JobManagementPage />,
+            },
+            {
+              path: 'upsert',
+              element: <JobUpsertPage />,
+            },
+          ],
         },
         {
           path: 'users',

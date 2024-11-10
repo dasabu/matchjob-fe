@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-class AxiosService {
+class AxiosClient {
   instance: AxiosInstance
   constructor() {
     this.instance = axios.create({
@@ -12,6 +12,6 @@ class AxiosService {
   }
 }
 
-const axiosInstance = new AxiosService().instance
+const axiosInstance = new AxiosClient().instance
 
 export default axiosInstance

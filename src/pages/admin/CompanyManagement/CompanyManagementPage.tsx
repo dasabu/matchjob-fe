@@ -125,7 +125,7 @@ export default function CompanyManagementPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-10">
+    <div className="max-w-7xl mx-auto lg:p-10 p-4">
       {/* Filtering */}
       <div className="flex flex-row justify-evenly mb-8 gap-2 items-center">
         <Input
@@ -141,35 +141,35 @@ export default function CompanyManagementPage() {
 
         <Button onClick={handleSearchSubmit}>Tìm kiếm</Button>
       </div>
-      {/* Functional buttons */}
-      <div className="mb-3 flex flex-row gap-2">
-        <Button
-          className="flex flex-row items-center justify-center"
-          onClick={handleAddCompany}
-        >
-          <Plus className="h-4 w-4" />
-          Thêm công ty
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex flex-row items-center justify-center"
-          onClick={() => refetch()}
-        >
-          <RotateCcw className="h-4 w-4" />
-          Refresh
-        </Button>
-      </div>
-      {/* Main table */}
-      <div className="mb-4">
-        {data && (
-          <DataTable
-            columns={columns(setSort, handleEditCompany, handleDeleteCompany)}
-            data={data}
-          />
-        )}
-      </div>
-      {/* Pagination */}
-      <div className="flex justify-end space-x-8">
+      {/* Functions */}
+      <div className="flex flex-row justify-between items-center mb-3">
+        {/* Functional buttons */}
+        <div className="flex flex-row gap-2">
+          <Button
+            className="flex flex-row items-center justify-center"
+            onClick={handleAddCompany}
+          >
+            <Plus className="h-4 w-4" />
+            Thêm công ty
+          </Button>
+          <Button
+            variant="ghost"
+            className="flex flex-row items-center justify-center"
+            onClick={() => refetch()}
+          >
+            <RotateCcw className="h-4 w-4" />
+            Refresh
+          </Button>
+        </div>
+        {/* Pagination component */}
+        <PaginationComponent
+          current={current}
+          onPageChange={setCurrent}
+          renderPageNumbers={renderPageNumbers}
+          handleNext={handleNext}
+          handlePrevious={handlePrevious}
+        />
+        {/* Select pagination options */}
         <div className="flex flex-row items-center">
           <p className="text-sm font-light block min-w-[100px]">
             Rows per page
@@ -194,15 +194,15 @@ export default function CompanyManagementPage() {
             </SelectContent>
           </Select>
         </div>
-        <div>
-          <PaginationComponent
-            current={current}
-            onPageChange={setCurrent}
-            renderPageNumbers={renderPageNumbers}
-            handleNext={handleNext}
-            handlePrevious={handlePrevious}
+      </div>
+      {/* Main table */}
+      <div className="mb-4">
+        {data && (
+          <DataTable
+            columns={columns(setSort, handleEditCompany, handleDeleteCompany)}
+            data={data}
           />
-        </div>
+        )}
       </div>
       {/* Create/Update company modal */}
       <CompanyUpsertModal

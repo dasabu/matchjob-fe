@@ -1,5 +1,5 @@
 import { IBackendResponse, ICompany, IPagination } from '../interfaces/schemas'
-import axiosInstance from '../utils/axiosInstance'
+import axiosInstance from '../lib/axios'
 
 export const getCompaniesApi = async (query: string) => {
   const result = await axiosInstance.get<
@@ -31,14 +31,14 @@ export const createCompanyApi = async (
   )
 }
 
-export const updateCompanyApi = (
+export const updateCompanyApi = async (
   id: string,
   name: string,
   address: string,
   description: string,
   logo: string
 ) => {
-  return axiosInstance.patch<IBackendResponse<ICompany>>(
+  return await axiosInstance.patch<IBackendResponse<ICompany>>(
     `/api/v1/companies/${id}`,
     {
       name,
@@ -49,8 +49,8 @@ export const updateCompanyApi = (
   )
 }
 
-export const deleteCompanyApi = (id: string) => {
-  return axiosInstance.delete<IBackendResponse<ICompany>>(
+export const deleteCompanyApi = async (id: string) => {
+  return await axiosInstance.delete<IBackendResponse<ICompany>>(
     `/api/v1/companies/${id}`
   )
 }

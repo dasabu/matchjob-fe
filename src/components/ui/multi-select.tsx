@@ -199,7 +199,7 @@ export const MultiSelect = React.forwardRef<
             {...props}
             onClick={handleTogglePopover}
             className={cn(
-              'flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit',
+              'flex w-full p-1 rounded-md border min-h-[36px] h-auto items-center justify-between bg-inherit hover:bg-inherit',
               className
             )}
           >
@@ -243,7 +243,7 @@ export const MultiSelect = React.forwardRef<
                       )}
                       style={{ animationDuration: `${animation}s` }}
                     >
-                      {`+ ${selectedValues.length - maxCount}`}
+                      {`+ ${selectedValues.length - maxCount} ...`}
                       <XCircle
                         className="ml-2 h-4 w-4 cursor-pointer"
                         onClick={(event) => {

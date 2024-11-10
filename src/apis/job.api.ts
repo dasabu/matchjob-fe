@@ -1,5 +1,5 @@
 import { IBackendResponse, IPagination, IJob } from '../interfaces/schemas'
-import axiosInstance from '../utils/axiosInstance'
+import axiosInstance from '../lib/axios'
 
 export const getJobsApi = async (query: string) => {
   return await axiosInstance.get<IBackendResponse<IPagination<IJob>>>(
