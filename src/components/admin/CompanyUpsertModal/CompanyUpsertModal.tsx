@@ -106,7 +106,7 @@ export default function CompanyUpsertModal({
         toast({ title: response.data.message, variant: 'destructive' })
       }
     } catch (error) {
-      toast({ title: 'An error occurred', variant: 'destructive' })
+      toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
     }
   }
 
