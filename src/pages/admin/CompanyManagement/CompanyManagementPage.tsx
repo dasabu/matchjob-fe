@@ -21,7 +21,7 @@ import {
 } from '../../../components/ui/select'
 import PaginationComponent from '../../../components/PaginationComponent'
 import CompanyUpsertModal from '../../../components/admin/CompanyUpsertModal'
-import CompanyDeleteDialog from '../../../components/admin/CompanyDeleteDialog'
+import ConfirmationDeleteDialog from '../../../components/admin/ConfirmationDeleteDialog'
 import { toast } from '../../../hooks/use-toast'
 
 export default function CompanyManagementPage() {
@@ -103,16 +103,38 @@ export default function CompanyManagementPage() {
     if (deletedCompanyId) {
       try {
         const response = await deleteCompanyApi(deletedCompanyId)
-        if (response?.data?.statusCode === 200) {
-          toast({ title: response.data.message })
+        if (
+          response.data.statusCode === 200 ||
+          response.data.statusCode === 201
+        ) {
+          toast({
+            title: response.data.message || 'Xoá công ty thành công',
+          })
+          refetch()
         } else {
-          toast({ title: response.data.message, variant: 'destructive' })
+          toast({
+            title:
+              response.data.message ||
+              'Có lỗi xảy ra trong quá trình xoá công ty',
+            variant: 'destructive',
+          })
         }
-      } catch (error) {
-        toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
+      } catch (error: any) {
+        console.error(error)
+        toast({
+          title:
+            error.response?.data?.message ||
+            'Có lỗi xảy ra trong quá trình xoá công ty',
+          variant: 'destructive',
+        })
+      } finally {
+        setIsOpenDialog(false)
+        setDeletedCompanyId(undefined)
       }
     } else {
       toast({ title: 'Không tìm thấy công ty', variant: 'destructive' })
+      setIsOpenDialog(false)
+      setDeletedCompanyId(undefined)
     }
   }
 
@@ -202,15 +224,17 @@ export default function CompanyManagementPage() {
         setIsOpenModal={setIsOpenModal}
         companyData={companyData}
         setCompanyData={setCompanyData}
+        refetch={refetch}
       />
       {/* Delete company alert dialog */}
-      <CompanyDeleteDialog
+      <ConfirmationDeleteDialog
         isOpenDialog={isOpenDialog}
         setIsOpenDialog={setIsOpenDialog}
         onConfirm={confirmDeleteCompany}
         onCancel={() => {
           setIsOpenDialog(false)
           setDeletedCompanyId(undefined)
+          refetch()
         }}
       />
     </div>

@@ -25,20 +25,35 @@ import { Loader2, Plus, X } from 'lucide-react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { updateCompanyApi, createCompanyApi } from '../../../apis/company.api'
-import { ICompany } from '../../../interfaces/schemas'
+import {
+  IBackendResponse,
+  ICompany,
+  IPagination,
+} from '../../../interfaces/schemas'
 import { Label } from '../../ui/label'
+import { QueryObserverResult, RefetchOptions } from '@tanstack/react-query'
+import { AxiosResponse } from 'axios'
+import { uploadSingleFileApi } from '../../../apis/file.api'
 
 interface ICompanyModalProps {
   isOpenModal: boolean
   setIsOpenModal: (open: boolean) => void
   companyData?: ICompany | null
   setCompanyData: (data: any) => void
+  refetch: (
+    options?: RefetchOptions
+  ) => Promise<
+    QueryObserverResult<
+      AxiosResponse<IBackendResponse<IPagination<ICompany>>, any>,
+      Error
+    >
+  >
 }
 
 const formSchema = z.object({
-  name: z.string().min(1, 'Company name is required'),
-  address: z.string().min(1, 'Address is required'),
-  logo: z.string().min(1, 'Logo is required'),
+  name: z.string().min(1),
+  address: z.string().min(1),
+  logo: z.string().min(1),
   description: z.string().optional(),
 })
 
@@ -47,6 +62,7 @@ export default function CompanyUpsertModal({
   setIsOpenModal,
   companyData,
   setCompanyData,
+  refetch,
 }: ICompanyModalProps) {
   const [isUploading, setIsUploading] = useState(false)
 
@@ -99,14 +115,32 @@ export default function CompanyUpsertModal({
         )
       }
 
-      if (response.status === 200 || response.status === 201) {
-        toast({ title: response.data.message })
+      if (
+        response.data.statusCode === 200 ||
+        response.data.statusCode === 201
+      ) {
+        toast({
+          title:
+            response.data.message ||
+            `${companyData ? 'Cập nhật thông tin' : 'Thêm'}` +
+              ' công ty thành công',
+        })
         handleReset()
       } else {
-        toast({ title: response.data.message, variant: 'destructive' })
+        toast({
+          title:
+            response.data.message ||
+            'Có lỗi xảy ra trong quá trình thêm/cập nhật công ty',
+          variant: 'destructive',
+        })
       }
-    } catch (error) {
-      toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
+    } catch (error: any) {
+      toast({
+        title:
+          error.response?.data?.message ||
+          'Có lỗi xảy ra trong quá trình thêm/cập nhật công ty',
+        variant: 'destructive',
+      })
     }
   }
 
@@ -114,6 +148,7 @@ export default function CompanyUpsertModal({
     form.reset()
     setIsOpenModal(false)
     setCompanyData(null)
+    refetch()
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,26 +156,38 @@ export default function CompanyUpsertModal({
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
         toast({
-          title: 'File size must be less than 2MB',
+          title: 'Kích thước file tối đa 2MB',
           variant: 'destructive',
         })
         return
       }
       if (!['image/jpeg', 'image/png'].includes(file.type)) {
         toast({
-          title: 'Only JPG and PNG files are allowed',
+          title: 'Định dạng không hợp lệ. Chỉ chấp nhận: jpeg, png',
           variant: 'destructive',
         })
         return
       }
       setIsUploading(true)
       try {
-        // Implement your file upload logic here
-        // For now, we'll just set the file name as the logo value
-        form.setValue('logo', file.name)
-        setIsUploading(false)
-      } catch (error) {
-        toast({ title: 'Error uploading file', variant: 'destructive' })
+        const response = await uploadSingleFileApi(file, 'company')
+        console.log('response in upload company logo: ', response)
+        if (response.data.statusCode === 201) {
+          form.setValue('logo', response.data.data.fileName)
+          toast({
+            title: 'Upload thành công',
+            description: response.data.message,
+          })
+        } else {
+          throw new Error(response.data.message)
+        }
+      } catch (error: any) {
+        toast({
+          title: 'Có lỗi khi upload file',
+          description: error.message,
+          variant: 'destructive',
+        })
+      } finally {
         setIsUploading(false)
       }
     }
@@ -177,51 +224,54 @@ export default function CompanyUpsertModal({
               <FormField
                 control={form.control}
                 name="logo"
-                render={({ field }) => (
-                  <FormItem className="w-1/2">
-                    <FormLabel>Logo</FormLabel>
-                    <FormControl className="">
-                      <div className="flex flex-row items-center">
-                        <Input
-                          type="file"
-                          onChange={handleFileChange}
-                          accept="image/jpeg,image/png"
-                          className="hidden"
-                          id="logo-upload"
-                        />
-                        <div className="flex flex-row space-x-2">
-                          <Label
-                            htmlFor="logo-upload"
-                            className="h-32 w-32 max-w-1/2 cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80 flex flex-col items-center justify-center gap-2 rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 px-4 py-2"
-                          >
-                            {isUploading ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Plus className="h-4 w-4" />
+                render={({ field }) => {
+                  console.log('field.value: ', field.value)
+                  return (
+                    <FormItem className="w-1/2">
+                      <FormLabel>Logo</FormLabel>
+                      <FormControl className="">
+                        <div className="flex flex-row items-center">
+                          <Input
+                            type="file"
+                            onChange={handleFileChange}
+                            accept="image/jpeg,image/png"
+                            className="hidden"
+                            id="logo-upload"
+                          />
+                          <div className="flex flex-row space-x-2">
+                            <Label
+                              htmlFor="logo-upload"
+                              className="h-32 w-32 max-w-1/2 cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80 flex flex-col items-center justify-center gap-2 rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 px-4 py-2"
+                            >
+                              {isUploading ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Plus className="h-4 w-4" />
+                              )}
+                              Upload Logo
+                            </Label>
+                            {field.value && (
+                              <div className="relative">
+                                <img
+                                  src={`http://localhost:8000/images/company/${field.value}`}
+                                  alt="Logo preview"
+                                  className="h-32 w-32 max-w-1/2 object-cover rounded-md"
+                                />
+                                <Button
+                                  onClick={() => form.setValue('logo', '')}
+                                  className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1"
+                                >
+                                  <X className="h-2 w-2" />
+                                </Button>
+                              </div>
                             )}
-                            Upload Logo
-                          </Label>
-                          {field.value && (
-                            <div className="relative">
-                              <img
-                                src={`http://localhost:8000/images/company/${field.value}`}
-                                alt="Logo preview"
-                                className="h-32 w-32 max-w-1/2 object-cover rounded-md"
-                              />
-                              <Button
-                                onClick={() => form.setValue('logo', '')}
-                                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1"
-                              >
-                                <X className="h-2 w-2" />
-                              </Button>
-                            </div>
-                          )}
+                          </div>
                         </div>
-                      </div>
-                    </FormControl>
-                    {/* <FormMessage /> */}
-                  </FormItem>
-                )}
+                      </FormControl>
+                      {/* <FormMessage /> */}
+                    </FormItem>
+                  )
+                }}
               />
               {/* Address */}
               <FormField

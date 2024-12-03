@@ -9,26 +9,26 @@ import {
   AlertDialogTitle,
 } from '../../ui/alert-dialog'
 
-interface ICompanyDeleteDialogProps {
+interface IDeleteDialogProps {
   isOpenDialog: boolean
   setIsOpenDialog: (open: boolean) => void
   onConfirm: () => void
   onCancel: () => void
 }
 
-export default function CompanyDeleteDialog({
+export default function ConfirmationDeleteDialog({
   isOpenDialog,
   setIsOpenDialog,
   onConfirm,
   onCancel,
-}: ICompanyDeleteDialogProps) {
+}: IDeleteDialogProps) {
   return (
     <AlertDialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
           <AlertDialogDescription>
-            Bạn có chắc chắn muốn xóa công ty này? Hành động này không thể hoàn
+            Bạn có chắc chắn muốn xóa thực thể này? Hành động này không thể hoàn
             tác.
           </AlertDialogDescription>
         </AlertDialogHeader>

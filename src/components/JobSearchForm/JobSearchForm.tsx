@@ -55,7 +55,7 @@ export default function JobSearchForm() {
                         onValueChange={field.onChange}
                         placeholder="Tìm theo kỹ năng"
                         maxCount={3}
-                        value={field.value}
+                        defaultValue={field.value}
                       />
                     )}
                   />
@@ -70,7 +70,7 @@ export default function JobSearchForm() {
               <FormItem>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="w-full md:w-[200px] min-h-10">
+                    <SelectTrigger className="w-full md:w-[200px]">
                       <SelectValue
                         placeholder={
                           <div className="flex items-center text-slate-600">
@@ -91,7 +91,7 @@ export default function JobSearchForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="min-h-10 px-5">
+          <Button type="submit" className="px-5">
             Search
           </Button>
         </div>

@@ -1,3 +1,5 @@
+import { createBrowserRouter } from 'react-router-dom'
+
 import LayoutClient from '../layouts/LayoutClient'
 import CompanyListPage from '../pages/CompanyList'
 import CompanyDetailPage from '../pages/CompanyDetail'
@@ -6,12 +8,12 @@ import JobDetailPage from '../pages/JobDetail'
 import JobListPage from '../pages/JobList'
 import SignInPage from '../pages/SignIn'
 import SignUpPage from '../pages/SignUp'
-import { createBrowserRouter } from 'react-router-dom'
 import LayoutAdmin from '../layouts/LayoutAdmin'
 import CompanyManagementPage from '../pages/admin/CompanyManagement'
 import JobManagementPage from '../pages/admin/JobManagement'
 import UserManagementPage from '../pages/admin/UserManagement'
 import JobUpsertPage from '../pages/admin/JobUpsert'
+import ResumeManagementPage from '../pages/admin/ResumeManagement'
 
 export default function useAppRouter() {
   const appRouter = createBrowserRouter([
@@ -50,6 +52,10 @@ export default function useAppRouter() {
         {
           path: 'users',
           element: <UserManagementPage />,
+        },
+        {
+          path: 'resumes',
+          element: <ResumeManagementPage />,
         },
       ],
     },

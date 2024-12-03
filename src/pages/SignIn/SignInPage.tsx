@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
@@ -21,19 +21,15 @@ import {
   CardHeader,
   CardTitle,
 } from '../../components/ui/card'
-import { useToast } from '../../hooks/use-toast'
+import AnimatedTitle from '../../components/AnimatedTitle/AnimatedTitle'
+import { useAuthStore } from '../../store/authStore'
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: 'Vui lòng nhập một địa chỉ email hợp lệ.',
-  }),
-  password: z.string().min(6, {
-    message: 'Mật khẩu phải có ít nhất 6 ký tự.',
-  }),
+  email: z.string().email(),
+  password: z.string().min(6),
 })
 
 export default function SignInPage() {
-  const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,23 +38,13 @@ export default function SignInPage() {
     },
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+  const navigate = useNavigate()
 
-    // Simulate successful login
-    if (values.email && values.password) {
-      toast({
-        title: 'Đăng nhập thành công!',
-        description: 'Bạn sẽ được chuyển hướng đến trang chủ.',
-      })
-      // navigate('/')
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Có lỗi xảy ra',
-        description: 'Vui lòng kiểm tra lại thông tin đăng nhập.',
-      })
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { email, password } = values
+    await useAuthStore.getState().signIn(email, password)
+    if (useAuthStore.getState().isAuthenticated) {
+      navigate('/')
     }
   }
 
@@ -75,7 +61,7 @@ export default function SignInPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="email"
@@ -124,7 +110,7 @@ export default function SignInPage() {
       </Card>
       <div className="flex flex-row justify-center w-[700px]">
         {/* Assuming AnimatedTitle is a separate component */}
-        {/* <AnimatedTitle /> */}
+        <AnimatedTitle />
       </div>
     </div>
   )

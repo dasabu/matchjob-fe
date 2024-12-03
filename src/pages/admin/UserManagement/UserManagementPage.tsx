@@ -1,8 +1,7 @@
 import { columns } from './columns'
 
-import { deleteCompanyApi, getCompaniesApi } from '../../../apis/company.api'
 import { useFetchDataWithPagination } from '../../../hooks/useFetchDataWithPagination'
-import { ICompany, IUser } from '../../../interfaces/schemas'
+import { IUser } from '../../../interfaces/schemas'
 import { usePagination } from '../../../hooks/usePagination'
 import { useEffect, useState } from 'react'
 
@@ -20,10 +19,10 @@ import {
   SelectValue,
 } from '../../../components/ui/select'
 import PaginationComponent from '../../../components/PaginationComponent'
-import CompanyUpsertModal from '../../../components/admin/CompanyUpsertModal'
-import CompanyDeleteDialog from '../../../components/admin/CompanyDeleteDialog'
 import { toast } from '../../../hooks/use-toast'
-import { getUsersApi } from '../../../apis/user.api'
+import { deleteUserApi, getUsersApi } from '../../../apis/user.api'
+import UserUpsertModal from '../../../components/admin/UserUpsertModal'
+import ConfirmationDeleteDialog from '../../../components/admin/ConfirmationDeleteDialog'
 
 export default function CompanyManagementPage() {
   // Pagination
@@ -103,14 +102,28 @@ export default function CompanyManagementPage() {
   const confirmDeleteUser = async () => {
     if (deletedUserId) {
       try {
-        const response = await deleteCompanyApi(deletedUserId)
-        if (response?.data?.statusCode === 200) {
-          toast({ title: response.data.message })
+        const response = await deleteUserApi(deletedUserId)
+        if (
+          response?.data?.statusCode === 200 ||
+          response?.data?.statusCode === 201
+        ) {
+          toast({ title: response.data.message || 'Xoá người dùng thành công' })
+          refetch()
         } else {
-          toast({ title: response.data.message, variant: 'destructive' })
+          toast({
+            title:
+              response.data.message ||
+              'Có lỗi xảy ra trong quá trình xoá người dùng',
+            variant: 'destructive',
+          })
         }
-      } catch (error) {
-        toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
+      } catch (error: any) {
+        toast({
+          title:
+            error.response?.data?.message ||
+            'Có lỗi xảy ra trong quá trình xoá người dùng',
+          variant: 'destructive',
+        })
       }
     } else {
       toast({ title: 'Không tìm thấy người dùng', variant: 'destructive' })
@@ -197,23 +210,25 @@ export default function CompanyManagementPage() {
           />
         )}
       </div>
-      {/* Create/Update company modal */}
-      {/* <CompanyUpsertModal
-        isOpenModal={isOpenModal}
-        setIsOpenModal={setIsOpenModal}
-        companyData={companyData}
-        setCompanyData={setCompanyData}
-      /> */}
+      {/* Create/Update user modal */}
+      <UserUpsertModal
+        open={isOpenModal}
+        onOpenChange={setIsOpenModal}
+        userData={userData}
+        setUserData={setUserData}
+        refetch={refetch}
+      />
       {/* Delete company alert dialog */}
-      {/* <CompanyDeleteDialog
+      <ConfirmationDeleteDialog
         isOpenDialog={isOpenDialog}
         setIsOpenDialog={setIsOpenDialog}
-        onConfirm={confirmDeleteCompany}
+        onConfirm={confirmDeleteUser}
         onCancel={() => {
           setIsOpenDialog(false)
-          setDeletedCompanyId(undefined)
+          setDeletedUserId(undefined)
+          refetch()
         }}
-      /> */}
+      />
     </div>
   )
 }

@@ -124,6 +124,7 @@ export const MultiSelect = React.forwardRef<
     {
       options,
       onValueChange,
+      value = [], // Giá trị từ bên ngoài
       variant,
       defaultValue = [],
       placeholder = 'Select options',
@@ -138,9 +139,14 @@ export const MultiSelect = React.forwardRef<
   ) => {
     const [selectedValues, setSelectedValues] =
       React.useState<string[]>(defaultValue)
+
+    // Đồng bộ giá trị khi prop `value` thay đổi
+    React.useEffect(() => {
+      setSelectedValues(defaultValue || [])
+    }, [defaultValue])
+
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false)
     const [isAnimating, setIsAnimating] = React.useState(false)
-
     const handleInputKeyDown = (
       event: React.KeyboardEvent<HTMLInputElement>
     ) => {

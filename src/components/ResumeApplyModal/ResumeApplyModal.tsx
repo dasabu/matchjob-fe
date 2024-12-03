@@ -11,134 +11,168 @@ import { Button } from '../ui/button'
 import { Form, FormField, FormItem, FormLabel, FormControl } from '../ui/form'
 import { Input } from '../ui/input'
 import { Alert, AlertDescription } from '../ui/alert'
-import { useToast } from '../../hooks/use-toast'
+import { toast } from '../../hooks/use-toast'
 import { Upload } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { IJob } from '../../interfaces/schemas'
+import { useAuthStore } from '../../store/authStore'
+import { createResumeApi } from '../../apis/resume.api'
+import { uploadSingleFileApi } from '../../apis/file.api'
+import { Separator } from '../ui/separator'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface IResumeApplyModalProps {
-  isOpen: boolean
-  setIsOpen: (v: boolean) => void
-  jobDetail: IJob
+  isOpenModal: boolean
+  setIsOpenModal: (v: boolean) => void
+  jobDetail: IJob | null
 }
 
-export default function ApplyModal({
-  isOpen,
-  setIsOpen,
+export default function ResumeApplyModal({
+  isOpenModal,
+  setIsOpenModal,
   jobDetail,
 }: IResumeApplyModalProps) {
-  const navigate = useNavigate()
-  const { toast } = useToast()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const user = useAuthStore((state) => state.user)
+
   const [urlCV, setUrlCV] = useState<string>('')
   const form = useForm()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
-  const isAuthenticated = true
-  const user = true
-
-  const handleSubmit = async () => {
-    if (!urlCV && isAuthenticated) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Please upload your CV!',
-      })
-      return
-    }
-
-    if (!isAuthenticated) {
-      setIsOpen(false)
-      navigate(`/login?callback=${window.location.href}`)
-    } else if (jobDetail) {
-      try {
-        const res = await callCreateResume(
-          urlCV,
-          jobDetail.company?._id,
-          jobDetail._id
-        )
-        if (res.data) {
-          toast({
-            title: 'Success',
-            description: 'CV submitted successfully!',
-          })
-          setIsOpen(false)
-        } else {
-          throw new Error(res.message)
-        }
-      } catch (error: any) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: error.message || 'An error occurred',
-        })
-      }
-    }
+  // Reset form
+  const resetForm = () => {
+    setUrlCV('')
+    form.reset()
   }
 
+  // Handle upload CV function
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0]
     if (file) {
       try {
-        const res = await callUploadSingleFile(file, 'resume')
-        if (res && res.data) {
-          setUrlCV(res.data.fileName)
+        const response: any = await uploadSingleFileApi(file, 'resume') // AxiosResponse<IBackendResponse<{fileName: string}>>
+        if (response.data.statusCode === 201 && response.data.data?.fileName) {
+          setUrlCV(response.data.data.fileName)
           toast({
-            title: 'Success',
-            description: `${file.name} uploaded successfully`,
+            title: `Upload file ${file.name} thành công`,
+            description: response.data.message,
           })
         } else {
-          throw new Error(res.message)
+          setUrlCV('')
+          toast({
+            title: 'Không thể upload file. Vui lòng thử lại.',
+            description: response.data.message,
+            variant: 'destructive',
+          })
         }
       } catch (error: any) {
         setUrlCV('')
         toast({
+          title: 'Có lỗi xảy ra trong quá trình upload file. Vui lòng thử lại',
+          description: error.response?.data?.message || error.message,
           variant: 'destructive',
-          title: 'Error',
-          description:
-            error.message || 'An error occurred while uploading the file.',
+        })
+      }
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (!urlCV && isAuthenticated) {
+      toast({
+        title: 'Không thể gửi CV',
+        description: 'Vui lòng đính kèm CV',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!isAuthenticated) {
+      setIsOpenModal(false)
+      navigate(`/login?callback=${window.location.href}`)
+    } else if (jobDetail) {
+      try {
+        const response: any = await createResumeApi(
+          urlCV,
+          jobDetail.company?._id,
+          jobDetail._id
+        )
+        if (
+          response.data.statusCode === 200 ||
+          response.data.statusCode === 201
+        ) {
+          toast({
+            title: 'Gửi CV thành công',
+            description: response.data.message,
+          })
+          resetForm()
+          setIsOpenModal(false)
+          queryClient.invalidateQueries(['user-resumes'])
+        } else {
+          toast({
+            title: 'Không thể gửi CV',
+            description:
+              response.message || 'Không thể gửi CV. Vui lòng thử lại',
+            variant: 'destructive',
+          })
+        }
+      } catch (error: any) {
+        toast({
+          title: 'Có lỗi xảy ra trong quá trình gửi CV',
+          description: error.response?.data?.message || error?.message,
+          variant: 'destructive',
         })
       }
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpenModal}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) resetForm() // Reset form khi đóng modal
+        setIsOpenModal(isOpen)
+      }}
+    >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Apply for Job</DialogTitle>
+          <DialogTitle>Apply công việc</DialogTitle>
         </DialogHeader>
         {isAuthenticated ? (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
-              <Alert>
+              <Alert className="mb-4">
                 <AlertDescription>
-                  You are applying for the position of{' '}
-                  <strong>{jobDetail?.name}</strong> at{' '}
+                  Bạn đang ứng tuyển công việc{' '}
+                  <strong>{jobDetail?.name}</strong> tại công ty{' '}
                   <strong>{jobDetail?.company?.name}</strong>
                 </AlertDescription>
               </Alert>
+
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="mb-4">
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         {...field}
                         disabled
-                        value={JSON.stringify(user)}
+                        value={user?.user?.email}
                       />
                     </FormControl>
                   </FormItem>
                 )}
               />
-              <FormItem>
+
+              <FormItem className="mb-4">
                 <FormLabel>Upload CV</FormLabel>
                 <FormControl>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-center gap-2">
                     <Input
                       type="file"
                       accept=".doc,.docx,.pdf"
@@ -146,7 +180,7 @@ export default function ApplyModal({
                       className="hidden"
                       id="cv-upload"
                     />
-                    <Button asChild>
+                    <Button asChild className="w-full">
                       <label htmlFor="cv-upload" className="cursor-pointer">
                         <Upload className="w-4 h-4 mr-2" />
                         Upload CV (*.doc, *.docx, *.pdf, &lt; 5MB)
@@ -154,21 +188,22 @@ export default function ApplyModal({
                     </Button>
                     {urlCV && (
                       <span className="text-sm text-green-600">
-                        File uploaded
+                        File uploaded: {urlCV}
                       </span>
                     )}
                   </div>
                 </FormControl>
               </FormItem>
-              <DialogFooter>
-                <Button type="submit">Submit Application</Button>
+              <Separator />
+              <DialogFooter className="mt-4">
+                <Button type="submit">Submit</Button>
               </DialogFooter>
             </form>
           </Form>
         ) : (
           <Alert>
             <AlertDescription>
-              Please log in to submit your application.
+              Vui lòng đăng nhập để thực hiện thao tác này
             </AlertDescription>
           </Alert>
         )}

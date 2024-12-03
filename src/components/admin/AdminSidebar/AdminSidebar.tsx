@@ -1,8 +1,16 @@
-import { User, Warehouse, BriefcaseBusiness, ShieldCheck } from 'lucide-react'
+import {
+  User,
+  Warehouse,
+  BriefcaseBusiness,
+  ShieldCheck,
+  FileUser,
+  ChevronUp,
+} from 'lucide-react'
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -10,7 +18,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '../../ui/sidebar'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../ui/dropdown-menu'
+import { useAuthStore } from '../../../store/authStore'
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
+import { Button } from '../../ui/button'
 
 // Menu items.
 const items = [
@@ -29,9 +46,16 @@ const items = [
     url: '/admin/jobs',
     icon: BriefcaseBusiness,
   },
+  {
+    title: 'Resume',
+    url: '/admin/resumes',
+    icon: FileUser,
+  },
 ]
 
 export default function AdminSidebar() {
+  const user = useAuthStore((state) => state.user)
+  const navigate = useNavigate()
   return (
     <Sidebar>
       <SidebarContent>
@@ -39,7 +63,7 @@ export default function AdminSidebar() {
           <SidebarGroupLabel>
             <div className="flex flex-row gap-2">
               <ShieldCheck />
-              <p>Admin</p>
+              Admin
             </div>
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -60,6 +84,47 @@ export default function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="h-12 flex flex-row justify-between items-center">
+                  <Avatar>
+                    <AvatarImage
+                      src="https://github.com/shadcn.png"
+                      alt="@shadcn"
+                    />
+                    <AvatarFallback>A</AvatarFallback>
+                  </Avatar>
+                  <div>Hi, {user?.user.name}</div>
+                  <ChevronUp className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                className="w-[--radix-popper-anchor-width]"
+              >
+                <DropdownMenuItem
+                  onClick={() => navigate('/')}
+                  className="hover:cursor-pointer"
+                >
+                  Trang chủ
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    useAuthStore.getState().signOut()
+                    navigate('/sign-in')
+                  }}
+                  className="hover:cursor-pointer"
+                >
+                  Đăng xuất
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   )
 }

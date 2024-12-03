@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import AnimatedTitle from '../../components/AnimatedTitle/AnimatedTitle'
 import { Button } from '../../components/ui/button'
@@ -29,34 +29,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select'
-import { useToast } from '../../hooks/use-toast'
+import { useAuthStore } from '../../store/authStore'
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'Tên phải có ít nhất 2 ký tự.',
-  }),
-  email: z.string().email({
-    message: 'Vui lòng nhập một địa chỉ email hợp lệ.',
-  }),
-  password: z.string().min(6, {
-    message: 'Mật khẩu phải có ít nhất 6 ký tự.',
-  }),
-  age: z.number().min(18, {
-    message: 'Bạn phải từ 18 tuổi trở lên.',
-  }),
-  gender: z.enum(['male', 'female', 'other'], {
-    required_error: 'Vui lòng chọn giới tính.',
-  }),
-  address: z.string().min(1, {
-    message: 'Vui lòng nhập địa chỉ.',
-  }),
+  name: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(6),
+  age: z.number().min(1).max(100),
+  gender: z.enum(['male', 'female', 'other']),
+  address: z.string().min(1),
 })
 
-type FormValues = z.infer<typeof formSchema>
-
 export default function SignUpPage() {
-  const { toast } = useToast()
-  const form = useForm<FormValues>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -68,23 +53,17 @@ export default function SignUpPage() {
     },
   })
 
-  const onSubmit = async (values: FormValues) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+  const navigate = useNavigate()
 
-    // Simulate successful registration
-    if (values.email && values.password) {
-      toast({
-        title: 'Đăng ký tài khoản thành công!',
-        description: 'Bạn sẽ được chuyển hướng đến trang đăng nhập.',
-      })
-      // navigate('/')
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Có lỗi xảy ra',
-        description: 'Vui lòng kiểm tra lại thông tin đăng ký.',
-      })
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { address, age, email, gender, name, password } = values
+
+    const isSuccess = await useAuthStore
+      .getState()
+      .signUp(name, email, password, age, gender, address)
+
+    if (isSuccess) {
+      navigate('/sign-in')
     }
   }
 

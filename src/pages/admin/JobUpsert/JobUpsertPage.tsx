@@ -59,13 +59,15 @@ const formSchema = z.object({
   salary: z.number().int().positive().min(0),
   quantity: z.number().int().positive().min(0),
   level: z.string(),
-  company: z.object({
-    _id: z.string(),
-    name: z.string(),
-    logo: z.string(),
-  }),
-  startDate: z.date(),
-  endDate: z.date(),
+  company: z.string(),
+  startDate: z.preprocess(
+    (val) => (typeof val === 'string' ? new Date(val) : val),
+    z.date()
+  ),
+  endDate: z.preprocess(
+    (val) => (typeof val === 'string' ? new Date(val) : val),
+    z.date()
+  ),
   isActive: z.boolean().default(true),
   description: z.string(),
 })
@@ -88,13 +90,15 @@ export default function JobUpsertPage() {
     queryFn: async () => {
       if (id) {
         return await getJobByIdApi(id)
-      } else return undefined
+      } else {
+        return undefined
+      }
     },
   })
 
   useEffect(() => {
     if (fetchedJobData?.data?.data) {
-      setJobData(fetchedJobData?.data?.data)
+      setJobData(fetchedJobData.data.data)
     }
   }, [fetchedJobData])
 
@@ -107,7 +111,7 @@ export default function JobUpsertPage() {
       salary: jobData?.salary || 0,
       quantity: jobData?.quantity || 1,
       level: jobData?.level || '',
-      company: jobData?.company || undefined,
+      company: jobData?.company?._id || undefined,
       startDate: jobData?.startDate || undefined,
       endDate: jobData?.endDate || undefined,
       isActive: jobData?.isActive || true,
@@ -124,7 +128,7 @@ export default function JobUpsertPage() {
         salary: jobData.salary,
         quantity: jobData.quantity,
         level: jobData.level,
-        company: jobData.company,
+        company: jobData?.company?._id,
         startDate: jobData.startDate,
         endDate: jobData.endDate,
         isActive: jobData.isActive,
@@ -138,7 +142,7 @@ export default function JobUpsertPage() {
         salary: 0,
         quantity: 1,
         level: '',
-        company: {},
+        company: '',
         startDate: undefined,
         endDate: undefined,
         isActive: true,
@@ -156,18 +160,31 @@ export default function JobUpsertPage() {
     if (fetchedCompaniesData?.data?.data?.result) {
       setCompaniesData(fetchedCompaniesData.data.data.result)
     }
-  }, [fetchedCompaniesData])
+  }, [fetchedCompaniesData?.data?.data?.result])
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    const selectedCompany = companiesData?.find(
+      (company) => company._id === data.company
+    )
+
+    const payload = {
+      ...data,
+      startDate: new Date(data.startDate), // Đảm bảo là Date object
+      endDate: new Date(data.endDate), // Đảm bảo là Date object
+      company: {
+        _id: selectedCompany?._id || '',
+        name: selectedCompany?.name || '',
+        logo: selectedCompany?.logo || '',
+      },
+    }
+
     try {
       let response
-
-      if (jobData?._id) {
-        response = await updateJobApi(jobData, jobData._id)
+      if (id) {
+        response = await updateJobApi(payload, id)
       } else {
-        response = await createJobApi(jobData!)
+        response = await createJobApi(payload)
       }
-
       if (response.status === 200 || response.status === 201) {
         toast({ title: response.data.message })
         form.reset()
@@ -176,6 +193,7 @@ export default function JobUpsertPage() {
         toast({ title: response.data.message, variant: 'destructive' })
       }
     } catch (error) {
+      console.error('Error:', error)
       toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
     }
   }
@@ -220,22 +238,23 @@ export default function JobUpsertPage() {
             <FormField
               control={form.control}
               name="skills"
-              render={({ field }) => (
-                <FormItem className="lg:col-span-3">
-                  <FormLabel className="after:text-red-500 after:content-['*']">
-                    Kỹ năng yêu cầu
-                  </FormLabel>
-                  <MultiSelect
-                    defaultValue={jobData?.skills}
-                    options={SKILL_LIST}
-                    onValueChange={field.onChange}
-                    placeholder="Kỹ năng..."
-                    maxCount={2}
-                    value={field.value}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                return (
+                  <FormItem className="lg:col-span-3">
+                    <FormLabel className="after:text-red-500 after:content-['*']">
+                      Kỹ năng yêu cầu
+                    </FormLabel>
+                    <MultiSelect
+                      options={SKILL_LIST}
+                      onValueChange={(value) => form.setValue('skills', value)}
+                      placeholder="Kỹ năng..."
+                      maxCount={2}
+                      defaultValue={field.value}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
             />
 
             {/* Location */}
@@ -247,7 +266,10 @@ export default function JobUpsertPage() {
                   <FormLabel className="after:text-red-500 after:content-['*']">
                     Địa điểm
                   </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Địa điểm..." />
@@ -255,7 +277,7 @@ export default function JobUpsertPage() {
                     </FormControl>
                     <SelectContent>
                       {LOCATION_LIST.map((location) => (
-                        <SelectItem key={location.value} value={location.label}>
+                        <SelectItem key={location.value} value={location.value}>
                           {location.label}
                         </SelectItem>
                       ))}
@@ -349,21 +371,29 @@ export default function JobUpsertPage() {
               control={form.control}
               name="company"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="lg:col-span-1">
                   <FormLabel className="after:text-red-500 after:content-['*']">
                     Công ty
                   </FormLabel>
-                  <Select onValueChange={field.onChange}>
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Chọn công ty..." />
+                        <SelectValue placeholder="Chọn công ty...">
+                          {field.value &&
+                            companiesData?.find(
+                              (company) => company._id === field.value
+                            )?.name}
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {companiesData &&
                         companiesData.map((company) => (
-                          <SelectItem key={company._id} value={company.name!}>
-                            {company.name!}
+                          <SelectItem key={company._id} value={company._id!}>
+                            {company.name}
                           </SelectItem>
                         ))}
                     </SelectContent>
@@ -377,86 +407,111 @@ export default function JobUpsertPage() {
             <FormField
               control={form.control}
               name="startDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="after:text-red-500 after:content-['*']">
-                    Ngày bắt đầu
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'w-full pl-3 text-left font-light',
-                            !startDate && 'text-muted-foreground'
-                          )}
-                        >
-                          {startDate ? (
-                            format(startDate, 'dd/MM/yyyy')
-                          ) : (
-                            <span>dd/mm/yyyy</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={(date) => setStartDate(date)}
-                        disabled={(date) => (endDate ? date > endDate : false)}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                // Đồng bộ startDate từ field.value khi render
+                useEffect(() => {
+                  if (field.value) {
+                    setStartDate(new Date(field.value))
+                  }
+                }, [field.value])
+
+                return (
+                  <FormItem>
+                    <FormLabel className="after:text-red-500 after:content-['*']">
+                      Ngày bắt đầu
+                    </FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-light',
+                              !startDate && 'text-muted-foreground'
+                            )}
+                          >
+                            {startDate ? (
+                              format(startDate, 'dd/MM/yyyy')
+                            ) : (
+                              <span>dd/mm/yyyy</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={startDate}
+                          onSelect={(date) => {
+                            setStartDate(date) // Cập nhật startDate
+                            field.onChange(date) // Truyền trực tiếp Date object vào field
+                          }}
+                          disabled={(date) =>
+                            endDate ? date > endDate : false
+                          }
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
             />
 
             {/* End Date */}
             <FormField
               control={form.control}
               name="endDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="after:text-red-500 after:content-['*']">
-                    Ngày kết thúc
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'w-full pl-3 text-left font-light',
-                            !endDate && 'text-muted-foreground'
-                          )}
-                        >
-                          {endDate ? (
-                            format(endDate, 'dd/MM/yyyy')
-                          ) : (
-                            <span>dd/mm/yyyy</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={(date) => setEndDate(date)}
-                        disabled={(date) =>
-                          startDate ? date < startDate : false
-                        }
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                // Đồng bộ startDate từ field.value khi render
+                useEffect(() => {
+                  if (field.value) {
+                    setEndDate(new Date(field.value))
+                  }
+                }, [field.value])
+                return (
+                  <FormItem>
+                    <FormLabel className="after:text-red-500 after:content-['*']">
+                      Ngày kết thúc
+                    </FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-light',
+                              !endDate && 'text-muted-foreground'
+                            )}
+                          >
+                            {endDate ? (
+                              format(endDate, 'dd/MM/yyyy')
+                            ) : (
+                              <span>dd/mm/yyyy</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={endDate}
+                          onSelect={(date) => {
+                            setEndDate(date)
+                            field.onChange(date)
+                          }}
+                          disabled={(date) =>
+                            startDate ? date < startDate : false
+                          }
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
             />
           </div>
 
@@ -497,7 +552,7 @@ export default function JobUpsertPage() {
                     Job Description
                   </FormLabel>
                   <FormControl>
-                    <ReactQuill className="h-72" />
+                    <ReactQuill className="h-72" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -506,9 +561,7 @@ export default function JobUpsertPage() {
           </div>
 
           <div className="flex justify-start space-x-4">
-            <Button type="submit" onClick={onSubmit}>
-              {id ? 'Cập nhật' : 'Tạo'}
-            </Button>
+            <Button type="submit">{id ? 'Cập nhật' : 'Tạo'}</Button>
             <Button
               type="button"
               variant="outline"

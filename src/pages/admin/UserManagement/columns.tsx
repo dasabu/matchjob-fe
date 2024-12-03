@@ -74,7 +74,7 @@ export const columns = (
           column.toggleSorting(column.getIsSorted() === 'asc')
         }}
       >
-        Address
+        Email
         <ArrowUpDown className="h-4 w-4" />
       </button>
     ),
@@ -142,7 +142,13 @@ export const columns = (
     cell: ({ row }) => {
       return (
         <div className="flex flex-row justify-center">
-          <Button onClick={() => handleEdit(row.original)} variant="ghost">
+          <Button
+            onClick={() => {
+              // console.log(row.original)
+              handleEdit(row.original)
+            }}
+            variant="ghost"
+          >
             <FilePenLine className="h-4 w-4" />
           </Button>
           <Button

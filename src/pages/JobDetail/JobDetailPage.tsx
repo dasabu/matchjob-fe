@@ -148,8 +148,8 @@ export default function JobDetailPage() {
       )}
       {job && (
         <ResumeApplyModal
-          isOpen={isModalOpen}
-          setIsOpen={setIsModalOpen}
+          isOpenModal={isModalOpen}
+          setIsOpenModal={setIsModalOpen}
           jobDetail={job}
         />
       )}

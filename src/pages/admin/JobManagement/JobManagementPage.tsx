@@ -28,8 +28,8 @@ import {
   BreadcrumbList,
 } from '../../../components/ui/breadcrumb'
 import { Link } from 'react-router-dom'
-import JobDeleteDialog from '../../../components/admin/JobDeleteDialog'
 import { toast } from '../../../hooks/use-toast'
+import ConfirmationDeleteDialog from '../../../components/admin/ConfirmationDeleteDialog'
 
 export default function CompanyManagementPage() {
   const navigate = useNavigate()
@@ -109,15 +109,27 @@ export default function CompanyManagementPage() {
       try {
         const response = await deleteJobApi(deletedJobId)
         if (response?.data?.statusCode === 200) {
-          toast({ title: response.data.message })
+          toast({ title: response.data.message || 'Xoá công việc thành công' })
+          refetch()
         } else {
-          toast({ title: response.data.message, variant: 'destructive' })
+          toast({
+            title: response.data.message || 'Something went wrong',
+            variant: 'destructive',
+          })
         }
-      } catch (error) {
-        toast({ title: 'Có lỗi xảy ra', variant: 'destructive' })
+      } catch (error: any) {
+        toast({
+          title: error.message || 'Có lỗi xảy ra',
+          variant: 'destructive',
+        })
+      } finally {
+        setIsOpenDialog(false)
+        setDeletedJobId(undefined)
       }
     } else {
       toast({ title: 'Không tìm thấy công việc', variant: 'destructive' })
+      setIsOpenDialog(false)
+      setDeletedJobId(undefined)
     }
   }
 
@@ -226,7 +238,7 @@ export default function CompanyManagementPage() {
           />
         )}
       </div>
-      <JobDeleteDialog
+      <ConfirmationDeleteDialog
         isOpenDialog={isOpenDialog}
         setIsOpenDialog={setIsOpenDialog}
         onConfirm={confirmDeleteJob}
